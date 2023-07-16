@@ -12,44 +12,86 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
 from models import *
 
 ''' Mise à jour de la base de données
 export FLASK_APP=app
 export FLASK_ENV=development
+export FLASK_DEBUG=1
 flask shell
 from app import db
 db.create_all()'''
 
+# ----------------- Accueil ----------------- #
+
+# page d'accueil
 @app.route('/')
-def index():
+def accueil():
     # TODO: Récupérer l'utilisateur courrant
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
     diet = diete.query.get(utilisateur_courrant.diete)
-    return render_template('index.html', utilisateur=utilisateur_courrant, diete=diet)
+    return render_template('accueil.html', utilisateur=utilisateur_courrant, diete=diet)
 
-@app.route('/add')
-def hello():
-    a = aliment(titre='nothing')
-    db.session.add(a)
-    db.session.commit()
-    return 'Add'
+# ----------------- Diètes ----------------- #
 
+# page des diètes
 @app.route('/dietes')
 def dietes():
     dietes = diete.query.all()
     current_date = date.today().isoformat()
     return render_template('dietes.html', dietes=dietes, date=current_date)
 
+@app.route('/ajouter_diete', methods=['GET', 'POST'])
+def ajouter_diete():
+    createur_id = 1
+    titre = request.form['titre']
+    date_today = datetime.now()
+    diet = diete(titre_diete=titre, createur=createur_id, date=date_today)
+    db.session.add(diet)
+    db.session.commit()
+
+    # TODO : id = diet.id
+    return redirect(url_for('creer_diete', id=1))
+
+@app.route('/modifier_diete/<int:id>', methods=['GET', 'POST'])
+def modifier_diete(id):
+    return redirect('/dietes')
+
+@app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
+def supprimer_diete(id):
+    diete.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect('/dietes')
+
+@app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
+def voir_diete(id):
+    diet = diete.query.get(id)
+    return render_template('display_diete.html', diete=diet, meals=meals, aliments=aliments)
+
+@app.route('/print_diete/<int:id>', methods=['GET', 'POST'])
+def print_diete(id):
+    return redirect('/dietes')
+
+#changer_diete
+@app.route('/changer_diete/<int:id_utilisateur>', methods=['GET', 'POST'])
+def changer_diete(id_utilisateur):
+    utilisateur_courrant = utilisateur.query.filter_by(id=id_utilisateur).first()
+    dietes = diete.query.all()
+    return render_template('changer_diete.html', utilisateur=utilisateur_courrant, dietes=dietes)
+
+@app.route('/choisir_diete/<int:id>/<int:id_utilisateur>', methods=['GET', 'POST'])
+def choisir_diete(id, id_utilisateur):
+    utilisateur_courrant = utilisateur.query.filter_by(id=id_utilisateur).first()
+    utilisateur_courrant.diete = id
+    db.session.commit()
+    return redirect(url_for('accueil'))
+
+# ----------------- Aliments ----------------- #
+
 @app.route('/aliments')
 def aliments():
     aliments = aliment.query.all()
     return render_template('aliments.html', aliments=aliments)
-
-@app.route('/reglages')
-def reglages():
-    return render_template('reglages.html')
 
 @app.route('/ajouter_aliment', methods=['GET', 'POST'])
 def ajouter_aliment():
@@ -84,52 +126,25 @@ def ajouter_aliment():
 
     return render_template('ajouter_aliment.html')
 
-#modifier_aliment
 @app.route('/modifier_aliment/<int:id>', methods=['GET', 'POST'])
 def modifier_aliment(id):
     return redirect('/aliments')
 
-#supprimer_aliment
 @app.route('/supprimer_aliment/<int:id>', methods=['GET', 'POST'])
 def supprimer_aliment(id):
     aliment.query.filter_by(id=id).delete()
     db.session.commit()
     return redirect('/aliments')
 
-@app.route('/ajouter_diete', methods=['GET', 'POST'])
-def ajouter_diete():
-    createur_id = 1
-    titre = request.form['titre']
-    date_today = datetime.now()
-    diet = diete(titre_diete=titre, createur=createur_id, date=date_today)
-    db.session.add(diet)
-    db.session.commit()
+# ----------------- Reglages ----------------- #
 
-    # TODO : id = diet.id
-    return redirect(url_for('meals', id=1))
+@app.route('/reglages')
+def reglages():
+    return render_template('reglages.html')
 
-    
-#modifier_diete
-@app.route('/modifier_diete/<int:id>', methods=['GET', 'POST'])
-def modifier_diete(id):
-    return redirect('/dietes')
+# ----------------- Repas ----------------- #
 
-#supprimer_diete
-@app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
-def supprimer_diete(id):
-    diete.query.filter_by(id=id).delete()
-    db.session.commit()
-    return redirect('/dietes')
-
-@app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
-def voir_diete(id):
-    diet = diete.query.get(id)
-    return render_template('display_diete.html', diete=diet, meals=meals, aliments=aliments)
-
-@app.route('/print_diete/<int:id>', methods=['GET', 'POST'])
-def print_diete(id):
-    return redirect('/dietes')
-
+'''
 @app.route('/meals/<int:id>', methods=['GET', 'POST'])
 def meals(id):
     if request.method == 'POST':
@@ -193,9 +208,9 @@ def ajouter_repas():
     else:
         return render_template('ajouter_repas.html')
     
-# creation_repas
-@app.route('/creation_repas', methods=['GET', 'POST'])
-def creation_repas():
+# creer_diete
+@app.route('/creer_diete', methods=['GET', 'POST'])
+def creer_diete():
     if request.method == 'POST':
         titre = request.form['titre']
         type = request.form['type']
@@ -207,34 +222,35 @@ def creation_repas():
         
         return redirect(url_for('custom_meal', id=meal.id))
     else:
-        return render_template('creation_repas.html')
+        return render_template('creer_diete.html')
+'''
 
-# custom_meal
-@app.route('/custom_meal/<int:id>', methods=['GET', 'POST'])
-def custom_meal(id):
-    portions_from_meal = db.session.query(portion).filter(portion.repas == id).all()
+# créer une diète
+@app.route('/creer_diete/<int:id>', methods=['GET', 'POST'])
+def creer_diete(id):
+    diete_courante = diete.query.get(id)
+    portions_repas = diete_courante.portions_associees()
 
     aliments = aliment.query.all()
-    return render_template('creation_repas.html', aliments=aliments, repas_id=id, portions_from_meal=portions_from_meal)
+    return render_template('creer_diete.html', aliments=aliments, id_diete=id, portions_repas=portions_repas)
  
-# add aliment to meal
-@app.route('/add_to_meal/<int:id>/<int:diete_id>', methods=['GET', 'POST'])
-def add_to_meal(id, diete_id):
-    quantite = request.args.get('quantite')
-    part = portion(repas=diete_id, aliment=id, nombre=quantite)
-    if portion.query.filter(portion.repas == diete_id, portion.aliment == id).first():
-        return redirect(url_for('custom_meal', id=diete_id))    
-    db.session.add(part)
+@app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>', methods=['GET', 'POST'])
+def ajouter_aliment_diete(id_aliment, id_diete, quantite):
+    nouvelle_portion = portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion='matin')
+        
+    db.session.add(nouvelle_portion)
     db.session.commit()
-    return redirect(url_for('custom_meal', id=diete_id))
 
-@app.route('/remove_from_meal/<int:id>/<int:diete_id>', methods=['GET', 'POST'])
-def remove_from_meal(id, diete_id):
-    part = portion.query.filter(portion.repas == diete_id, portion.aliment == id).first()
-    db.session.delete(part)    
+    return redirect(url_for('creer_diete', id=id_diete))
+
+@app.route('/enlever_aliment_diete/<int:id_portion>/<int:id_diete>', methods=['GET', 'POST'])
+def enlever_aliment_diete(id_portion, id_diete):
+    portion_courante = portion.query.get(id_portion)
+
+    db.session.delete(portion_courante)    
     db.session.commit()
     
-    return redirect(url_for('custom_meal', id=diete_id))
+    return redirect(url_for('creer_diete', id=id_diete))
 
 #init bdd
 @app.route('/init')
@@ -246,34 +262,26 @@ def init():
     a3 = aliment(titre='Orange', kcal=47, proteines=0.9, glucides=11.8, lipides=0.2, categorie='fruit', photo='orange.jpg', description='L orange est un agrume, fruit des orangers, des arbres de la famille des Rutaceae.', unite=True)
     a4 = aliment(titre='Pain', kcal=266, proteines=8.5, glucides=50.9, lipides=1.1, categorie='feculent', photo='pain.jpg', description='Le pain est un aliment de base traditionnel de nombreuses cultures. Il se présente sous forme de miche, de miettes ou de baguette.', unite=True)
 
-    # crétaion des repas
-    r1 = repas(titre='Galette de riz', type='Matin', label='Prise de masse')
-    r2 = repas(titre='Poulet et brocolis', type='Midi', label='Maintien')
-    r3 = repas(titre='Patate douce poisson', type='Soir', label='Sèche')
-
-    # le repas 1 est composé de 100g de pomme, 250g de banane et 40g d'orange
-    p1 = portion(repas=1, aliment=1, nombre=100)
-    p2 = portion(repas=1, aliment=2, nombre=250)
-    p3 = portion(repas=1, aliment=3, nombre=40)
-
-    # le repas 2 est composé de 100g de pain, 200g de poulet et 100g de brocolis
-    p4 = portion(repas=2, aliment=4, nombre=100)
-    p5 = portion(repas=2, aliment=1, nombre=200)
-    p6 = portion(repas=2, aliment=2, nombre=100)
-
-    # le repas 3 est composé de 100g de patate douce, 200g de poisson et 100g de brocolis
-    p7 = portion(repas=3, aliment=4, nombre=100)
-    p8 = portion(repas=3, aliment=1, nombre=200)
-    p9 = portion(repas=3, aliment=2, nombre=100)
-
     # création de la diète
-    d1 = diete(titre_diete='Diète Pat Sèche 2500', createur=1)
-    d2 = diete(titre_diete='Diète Pat Pdm 4000', createur=1)
+    date = datetime.now()
 
-    # la diète 1 est composée du repas 1, 2 et 3
-    e1 = estCompose(diete=1, repas=1)
-    e2 = estCompose(diete=1, repas=2)
-    e3 = estCompose(diete=1, repas=3)
+    d1 = diete(titre_diete='Diète Pat Sèche 2500', createur=1, date=date)
+    d2 = diete(titre_diete='Diète Pat Pdm 4000', createur=1, date=date)
+
+    # création des portions
+    p1 = portion(diete=1, aliment=1, nombre=1, label_portion='matin')
+    p2 = portion(diete=1, aliment=2, nombre=1, label_portion='matin')
+    p3 = portion(diete=1, aliment=3, nombre=1, label_portion='midi')
+    p4 = portion(diete=1, aliment=4, nombre=1, label_portion='midi')
+    p5 = portion(diete=1, aliment=1, nombre=1, label_portion='soir')
+    p6 = portion(diete=1, aliment=2, nombre=1, label_portion='soir')
+
+    p7 = portion(diete=2, aliment=1, nombre=1, label_portion='matin')
+    p8 = portion(diete=2, aliment=2, nombre=1, label_portion='matin')
+    p9 = portion(diete=2, aliment=3, nombre=1, label_portion='midi')
+    p10 = portion(diete=2, aliment=4, nombre=1, label_portion='midi')
+    p11 = portion(diete=2, aliment=1, nombre=1, label_portion='soir')
+    p12 = portion(diete=2, aliment=2, nombre=1, label_portion='soir')
 
     # création de l'utilisateur terry tempestini terry57tt@gmail.com
     u1 = utilisateur(nom='Tempestini', prenom='Terry', mail='terry57tt@gmail.com', mdp='terry57tt', age=21, taille=180, poids=80, sexe='homme', diete=1)
@@ -283,9 +291,8 @@ def init():
     db.session.add(a2)
     db.session.add(a3)
     db.session.add(a4)
-    db.session.add(r1)
-    db.session.add(r2)
-    db.session.add(r3)
+    db.session.add(d1)
+    db.session.add(d2)
     db.session.add(p1)
     db.session.add(p2)
     db.session.add(p3)
@@ -295,14 +302,11 @@ def init():
     db.session.add(p7)
     db.session.add(p8)
     db.session.add(p9)
-    db.session.add(d1)
-    db.session.add(d2)
-    db.session.add(e1)
-    db.session.add(e2)
-    db.session.add(e3)
+    db.session.add(p10)
+    db.session.add(p11)
+    db.session.add(p12)
     db.session.add(u1)
 
     db.session.commit()
 
-    students = aliment.query.all()
-    return render_template('index.html', students=students)
+    return redirect(url_for('accueil'))
