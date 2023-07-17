@@ -10,17 +10,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.jinja_env.add_extension('jinja2.ext.do')
 db = SQLAlchemy(app)
 from models import *
-
-''' Mise à jour de la base de données
-export FLASK_APP=app
-export FLASK_ENV=development
-export FLASK_DEBUG=1
-flask shell
-from app import db
-db.create_all()'''
 
 # ----------------- Accueil ----------------- #
 
@@ -257,11 +249,27 @@ def enlever_aliment_diete(id_portion, id_diete):
 def init():
     db.drop_all()
     db.create_all()
-    a1 = aliment(titre='Pomme', kcal=52, proteines=0.3, glucides=13.8, lipides=0.2, categorie='fruit', photo='pomme.jpg', description='La pomme est le fruit du pommier, arbre fruitier largement cultivé. L espèce la plus cultivée est Malus domestica.', unite=True)
-    a2 = aliment(titre='Banane', kcal=89, proteines=1.1, glucides=22.4, lipides=0.3, categorie='fruit', photo='banane.jpg', description='La banane est un fruit comestible, produit par diverses espèces de plantes herbacées de la famille des Musaceae.', unite=True)
-    a3 = aliment(titre='Orange', kcal=47, proteines=0.9, glucides=11.8, lipides=0.2, categorie='fruit', photo='orange.jpg', description='L orange est un agrume, fruit des orangers, des arbres de la famille des Rutaceae.', unite=True)
-    a4 = aliment(titre='Pain', kcal=266, proteines=8.5, glucides=50.9, lipides=1.1, categorie='feculent', photo='pain.jpg', description='Le pain est un aliment de base traditionnel de nombreuses cultures. Il se présente sous forme de miche, de miettes ou de baguette.', unite=True)
-
+    
+    a1 = aliment(titre='Blanc d\'œuf', kcal=52, proteines=11, glucides=0, lipides=0, categorie='protéine', photo='', description='', unite=0)
+    a2 = aliment(titre='Farine de patate douce', kcal=363, proteines=0, glucides=0, lipides=0, categorie='féculent', photo='', description='', unite=0)
+    a3 = aliment(titre='WHEY ISOLAT', kcal=346, proteines=90, glucides=0, lipides=0, categorie='protéine', photo='', description='', unite=0)
+    a4 = aliment(titre='Yaourt 0% 125g', kcal=50, proteines=0, glucides=0, lipides=0, categorie='lactose', photo='', description='', unite=1)
+    a5 = aliment(titre='Poulet', kcal=150, proteines=30, glucides=0, lipides=0, categorie='viande', photo='', description='', unite=0)
+    a6 = aliment(titre='Patate douce', kcal=86, proteines=0, glucides=0, lipides=0, categorie='féculent', photo='', description='', unite=0)
+    a7 = aliment(titre='Brocolis', kcal=50, proteines=0, glucides=0, lipides=0, categorie='légume', photo='', description='', unite=0)
+    a8 = aliment(titre='Huile d\'olive', kcal=884, proteines=0, glucides=0, lipides=100, categorie='matière grasse', photo='', description='', unite=0)
+    a9 = aliment(titre='Caséine', kcal=343, proteines=80, glucides=0, lipides=0, categorie='protéine', photo='', description='', unite=0)
+    a10 = aliment(titre='Glutamine', kcal=420, proteines=0, glucides=0, lipides=0, categorie='complément alimentaire', photo='', description='', unite=0)
+    a11 = aliment(titre='Flocons d\'avoine', kcal=350, proteines=8, glucides=0, lipides=0, categorie='féculent', photo='', description='', unite=0)
+    a12 = aliment(titre='Haricots verts', kcal=31, proteines=0, glucides=0, lipides=0, categorie='légume', photo='', description='', unite=0)
+    a13 = aliment(titre='Jaune d\'œuf', kcal=55, proteines=0, glucides=0, lipides=0, categorie='protéine', photo='', description='', unite=1)
+    a14 = aliment(titre='Pomme', kcal=52, proteines=0, glucides=13.8, lipides=0.2, categorie='fruit', photo='', description='', unite=1)
+    a15 = aliment(titre='Banane', kcal=105, proteines=0, glucides=22.4, lipides=0.3, categorie='fruit', photo='', description='', unite=1)
+    a16 = aliment(titre='Riz', kcal=355, proteines=0, glucides=0, lipides=0, categorie='féculent', photo='', description='', unite=0)
+    a17 = aliment(titre='Noix', kcal=654, proteines=0, glucides=0, lipides=0, categorie='fruit à coque', photo='', description='', unite=0)
+    a18 = aliment(titre='Concombre', kcal=13, proteines=0, glucides=0, lipides=0, categorie='légume', photo='', description='', unite=0)
+    a19 = aliment(titre='Poisson blanc', kcal=172, proteines=0, glucides=0, lipides=0, categorie='poisson', photo='', description='', unite=0)
+    
     # création de la diète
     date = datetime.now()
 
@@ -269,42 +277,49 @@ def init():
     d2 = diete(titre_diete='Diète Pat Pdm 4000', createur=1, date=date)
 
     # création des portions
-    p1 = portion(diete=1, aliment=1, nombre=1, label_portion='matin')
-    p2 = portion(diete=1, aliment=2, nombre=1, label_portion='matin')
-    p3 = portion(diete=1, aliment=3, nombre=1, label_portion='midi')
-    p4 = portion(diete=1, aliment=4, nombre=1, label_portion='midi')
-    p5 = portion(diete=1, aliment=1, nombre=1, label_portion='soir')
-    p6 = portion(diete=1, aliment=2, nombre=1, label_portion='soir')
+    # 1 = matin, 2 = collation matin, 3 = midi, 4 = collation midi, 5 = soir, 6 = collation soir
+    p1 = portion(diete=1, aliment=1, nombre=200, label_portion=1)
+    p2 = portion(diete=1, aliment=2, nombre=20, label_portion=1)
+    p3 = portion(diete=1, aliment=3, nombre=40, label_portion=2)
+    p4 = portion(diete=1, aliment=4, nombre=1, label_portion=2)
+    p5 = portion(diete=1, aliment=5, nombre=160, label_portion=3)
+    p6 = portion(diete=1, aliment=6, nombre=130, label_portion=3)
+    p7 = portion(diete=1, aliment=7, nombre=150, label_portion=3)
+    p8 = portion(diete=1, aliment=8, nombre=10, label_portion=3)
+    p9 = portion(diete=1, aliment=3, nombre=40, label_portion=4)
+    p10 = portion(diete=1, aliment=12, nombre=150, label_portion=4)
+    p11 = portion(diete=1, aliment=5, nombre=160, label_portion=5)
+    p12 = portion(diete=1, aliment=6, nombre=130, label_portion=5)
+    p13 = portion(diete=1, aliment=7, nombre=150, label_portion=5)
+    p14 = portion(diete=1, aliment=8, nombre=10, label_portion=5)
+    p15 = portion(diete=1, aliment=9, nombre=30, label_portion=6)
+    p16 = portion(diete=1, aliment=17, nombre=30, label_portion=6)
 
-    p7 = portion(diete=2, aliment=1, nombre=1, label_portion='matin')
-    p8 = portion(diete=2, aliment=2, nombre=1, label_portion='matin')
-    p9 = portion(diete=2, aliment=3, nombre=1, label_portion='midi')
-    p10 = portion(diete=2, aliment=4, nombre=1, label_portion='midi')
-    p11 = portion(diete=2, aliment=1, nombre=1, label_portion='soir')
-    p12 = portion(diete=2, aliment=2, nombre=1, label_portion='soir')
+    p18 = portion(diete=2, aliment=1, nombre=200, label_portion=1)
+    p19 = portion(diete=2, aliment=2, nombre=1, label_portion=1)
+    p20 = portion(diete=2, aliment=3, nombre=40, label_portion=2)
+    p21 = portion(diete=2, aliment=6, nombre=1, label_portion=2)
+    p22 = portion(diete=2, aliment=5, nombre=250, label_portion=3)
+    p23 = portion(diete=2, aliment=9, nombre=80, label_portion=3)
+    p24 = portion(diete=2, aliment=10, nombre=100, label_portion=3)
+    p25 = portion(diete=2, aliment=11, nombre=10, label_portion=3)
+    p26 = portion(diete=2, aliment=5, nombre=40, label_portion=4)
+    p27 = portion(diete=2, aliment=12, nombre=30, label_portion=4)
+    p28 = portion(diete=2, aliment=5, nombre=200, label_portion=5)
+    p29 = portion(diete=2, aliment=9, nombre=80, label_portion=5)
+    p30 = portion(diete=2, aliment=10, nombre=100, label_portion=5)
+    p31 = portion(diete=2, aliment=11, nombre=10, label_portion=5)
+    p32 = portion(diete=2, aliment=13, nombre=30, label_portion=6)
+    p33 = portion(diete=2, aliment=14, nombre=10, label_portion=6)
+    p34 = portion(diete=2, aliment=15, nombre=30, label_portion=6)
 
     # création de l'utilisateur terry tempestini terry57tt@gmail.com
     u1 = utilisateur(nom='Tempestini', prenom='Terry', mail='terry57tt@gmail.com', mdp='terry57tt', age=21, taille=180, poids=80, sexe='homme', diete=1)
 
     # ajout des données dans la base de données
-    db.session.add(a1)
-    db.session.add(a2)
-    db.session.add(a3)
-    db.session.add(a4)
-    db.session.add(d1)
-    db.session.add(d2)
-    db.session.add(p1)
-    db.session.add(p2)
-    db.session.add(p3)
-    db.session.add(p4)
-    db.session.add(p5)
-    db.session.add(p6)
-    db.session.add(p7)
-    db.session.add(p8)
-    db.session.add(p9)
-    db.session.add(p10)
-    db.session.add(p11)
-    db.session.add(p12)
+    db.session.add_all([a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19])
+    db.session.add_all([d1, d2])
+    db.session.add_all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13 ,p14, p15, p16, p18, p19, p20, p21, p22, p23 ,p24, p25, p26, p27, p28, p29 ,p30, p31, p32, p33, p34])
     db.session.add(u1)
 
     db.session.commit()

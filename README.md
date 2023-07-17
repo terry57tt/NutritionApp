@@ -22,6 +22,8 @@ flask run
 Après avoir installé le projet vous pouvez le lancer en étant au root du projet avec
 ```bash
 source venv/bin/activate
+export FLASK_ENV=development
+export FLASK_DEBUG=1
 flask run
 ```
 
