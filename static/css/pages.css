@@ -1,8 +1,20 @@
 .content{
-    padding: 1cm 6cm 0cm 6cm;
+    padding: 1cm 6cm 1cm 6cm;
+}
+
+.content_gerer_diete{
+    padding: 0.5cm 6cm 1cm 6cm;
 }
 
 .create_diet{
     text-align: center;
     padding-bottom: 1cm;
+}
+
+.content_pdf{
+    padding: 2cm;
+}
+
+.table td{
+    text-align: center;
 }

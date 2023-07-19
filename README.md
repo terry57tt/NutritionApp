@@ -18,6 +18,11 @@ pip install -r requirements.txt
 flask run
 ```
 
+## De temps en temps
+```bash
+pip freeze > requirements.txt
+```
+
 ## Lancement du projet
 Après avoir installé le projet vous pouvez le lancer en étant au root du projet avec
 ```bash

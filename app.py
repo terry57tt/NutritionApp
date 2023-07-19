@@ -1,8 +1,10 @@
 import os
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, flash, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 from sqlalchemy.orm import joinedload
+import pdfkit
+from urllib.parse import urlparse
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,6 +16,8 @@ app.jinja_env.add_extension('jinja2.ext.do')
 db = SQLAlchemy(app)
 from models import *
 
+
+
 # ----------------- Accueil ----------------- #
 
 # page d'accueil
@@ -23,6 +27,43 @@ def accueil():
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
     diet = diete.query.get(utilisateur_courrant.diete)
     return render_template('accueil.html', utilisateur=utilisateur_courrant, diete=diet)
+
+# ----------------- Login ----------------- #
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route('/login_utilisateur', methods=['GET', 'POST'])
+def login_utilisateur():
+    mail = request.form['mail']
+    mdp = request.form['mdp']
+    utilisateur_courrant = utilisateur.query.filter_by(mail=mail).first()
+    if utilisateur_courrant is None:
+        return redirect(url_for('login'))
+    elif utilisateur_courrant.mdp != mdp:
+        return redirect(url_for('login'))
+    else:
+        return redirect(url_for('accueil'))
+    
+@app.route('/signup_utilisateur', methods=['GET', 'POST'])
+def signup_utilisateur():
+    nom = request.form['nom']
+    prenom = request.form['prenom']
+    mail = request.form['mail']
+    mdp = request.form['mdp']
+    age = request.form['age']
+    taille = request.form['taille']
+    poids = request.form['poids']
+    sexe = request.form['sexe']
+    diete = 1
+    utilisateur_courrant = utilisateur(nom=nom, prenom=prenom, mail=mail, mdp=mdp, age=age, taille=taille, poids=poids, sexe=sexe, diete=diete)
+    db.session.add(utilisateur_courrant)
+    db.session.commit()
+    return redirect(url_for('accueil'))
 
 # ----------------- Diètes ----------------- #
 
@@ -41,13 +82,11 @@ def ajouter_diete():
     diet = diete(titre_diete=titre, createur=createur_id, date=date_today)
     db.session.add(diet)
     db.session.commit()
-
-    # TODO : id = diet.id
-    return redirect(url_for('creer_diete', id=1))
+    return redirect(url_for('creer_diete', id = diet.id))
 
 @app.route('/modifier_diete/<int:id>', methods=['GET', 'POST'])
 def modifier_diete(id):
-    return redirect('/dietes')
+    return redirect(url_for('creer_diete', id = id))
 
 @app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
 def supprimer_diete(id):
@@ -58,7 +97,7 @@ def supprimer_diete(id):
 @app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
 def voir_diete(id):
     diet = diete.query.get(id)
-    return render_template('display_diete.html', diete=diet, meals=meals, aliments=aliments)
+    return render_template('display_diete.html', root = default_root(), diete=diet)
 
 @app.route('/print_diete/<int:id>', methods=['GET', 'POST'])
 def print_diete(id):
@@ -77,6 +116,25 @@ def choisir_diete(id, id_utilisateur):
     utilisateur_courrant.diete = id
     db.session.commit()
     return redirect(url_for('accueil'))
+
+def default_root():
+    parsed_url = urlparse(request.url)
+    return parsed_url.scheme + "://" + parsed_url.netloc
+
+@app.route('/print_diete_pdf/<int:id_diete>', methods=['GET', 'POST'])
+def print_diete_pdf(id_diete):
+    utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
+    diet = diete.query.get(utilisateur_courrant.diete)
+    out = render_template("diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
+    return html_to_pdf(out)
+
+def html_to_pdf(html,filename='diete.pdf',download=False):
+    pdf = pdfkit.from_string(html, False)
+    response = Response(pdf, mimetype='application/pdf')
+    if download :
+        response.headers.set('Content-Disposition', f'attachment; filename={filename}')
+    return response
+
 
 # ----------------- Aliments ----------------- #
 
@@ -134,88 +192,6 @@ def supprimer_aliment(id):
 def reglages():
     return render_template('reglages.html')
 
-# ----------------- Repas ----------------- #
-
-'''
-@app.route('/meals/<int:id>', methods=['GET', 'POST'])
-def meals(id):
-    if request.method == 'POST':
-        titre = request.form['titre']
-        type = request.form['type']
-        label = request.form['label']
-        
-        meal = repas(titre=titre, type=type, label=label)
-        db.session.add(meal)
-        db.session.commit()
-        
-        return redirect(url_for('repas'))
-    else:
-        repas_list = repas.query.all()
-
-        repas_lies = (
-                repas.query
-                .join(estCompose)
-                .filter(estCompose.diete == id)
-                .options(joinedload(repas.est_composes))
-                .all()
-            )
-        
-        return render_template('repas.html', repas=repas_list, repas_lies=repas_lies, diete_id=id)
-
-
-#add_to_diet
-@app.route('/add_to_diet/<int:id>/<int:diete_id>', methods=['GET', 'POST'])
-def add_to_diet(id, diete_id):
-    relation = estCompose(diete=diete_id, repas=id)
-    # TODO : flash message si déjà dans la diète
-    if estCompose.query.filter(estCompose.diete == diete_id, estCompose.repas == id).first():
-        return redirect(url_for('meals', id=diete_id))
-    db.session.add(relation)
-    db.session.commit()
-    
-    return redirect(url_for('meals', id=diete_id))
-
-# enlever repas de la diète
-@app.route('/enlever_repas/<int:id>/<int:diete_id>', methods=['GET', 'POST'])
-def enlever_repas(id, diete_id):
-    relation = estCompose.query.filter(estCompose.diete == diete_id, estCompose.repas == id).first()
-    db.session.delete(relation)    
-    db.session.commit()
-    
-    return redirect(url_for('meals', id=diete_id))
-
-#ajouter_repas
-@app.route('/ajouter_repas', methods=['GET', 'POST'])
-def ajouter_repas():
-    if request.method == 'POST':
-        titre = request.form['titre']
-        type = request.form['type']
-        label = request.form['label']
-        
-        meal = repas(titre=titre, type=type, label=label)
-        db.session.add(meal)
-        db.session.commit()
-        
-        return redirect(url_for('repas'))
-    else:
-        return render_template('ajouter_repas.html')
-    
-# creer_diete
-@app.route('/creer_diete', methods=['GET', 'POST'])
-def creer_diete():
-    if request.method == 'POST':
-        titre = request.form['titre']
-        type = request.form['type']
-        label = request.form['label']
-        
-        meal = repas(titre=titre, type=type, label=label)
-        db.session.add(meal)
-        db.session.commit()
-        
-        return redirect(url_for('custom_meal', id=meal.id))
-    else:
-        return render_template('creer_diete.html')
-'''
 
 # créer une diète
 @app.route('/creer_diete/<int:id>', methods=['GET', 'POST'])
@@ -224,12 +200,12 @@ def creer_diete(id):
     portions_repas = diete_courante.portions_associees()
 
     aliments = aliment.query.all()
-    return render_template('creer_diete.html', aliments=aliments, id_diete=id, portions_repas=portions_repas)
+    return render_template('creer_diete.html', aliments=aliments, diete=diete_courante, portions_repas=portions_repas)
  
-@app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>', methods=['GET', 'POST'])
-def ajouter_aliment_diete(id_aliment, id_diete, quantite):
-    nouvelle_portion = portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion='matin')
-        
+@app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:label>', methods=['GET', 'POST'])
+def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
+    nouvelle_portion = portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion=label)
+    
     db.session.add(nouvelle_portion)
     db.session.commit()
 
@@ -237,11 +213,11 @@ def ajouter_aliment_diete(id_aliment, id_diete, quantite):
 
 @app.route('/enlever_aliment_diete/<int:id_portion>/<int:id_diete>', methods=['GET', 'POST'])
 def enlever_aliment_diete(id_portion, id_diete):
-    portion_courante = portion.query.get(id_portion)
+    portion_courante = portion.query.get(id_portion)    
 
     db.session.delete(portion_courante)    
     db.session.commit()
-    
+
     return redirect(url_for('creer_diete', id=id_diete))
 
 #init bdd

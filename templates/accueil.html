@@ -41,6 +41,9 @@
     <div class="d-flex justify-content-center">
       <div class="section text-center">
         <a href="{{ url_for('changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
+        <a href="{{ url_for('print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary">Imprimer diète</a>
       </div>
   </div>
+</div>
+
 {% endblock %}

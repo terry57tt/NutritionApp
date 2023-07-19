@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{root}}{{ url_for('static', filename='css/pages.css') }}">
+<div class="content_pdf">
+    <h1 class="text-center"><b>{{ diete.titre_diete }}</b></h1>
+    <p class="text-center">{{ utilisateur.prenom }} {{ utilisateur.nom }}</p>
+    {% set current_label = [] %}
+    {% for portion in diete.portions_associees() %}
+        {% if current_label[-1] != portion.label_portion %}
+                <table class="table table-striped table-bordered full-width-table">
+                    {% do current_label.append(portion.label_portion) %}
+                        <tr>
+                            <th colspan="4" style="padding-left: 10px;">
+                                {% if current_label[-1] == 1 %}
+                                    Matin
+                                {% elif current_label[-1] == 3 %}
+                                    Midi
+                                {% elif current_label[-1] == 5 %}
+                                    Soir
+                                {% else %}
+                                    Collation
+                                {% endif %}
+                            </th>
+                        </tr>
+            {% endif %}
+                    <tr class="text-center">
+                        {% if portion.aliment_obj.unite == 1 %}
+                                <td style="width: 10%">{{ portion.nombre }}</td>
+                                <td style="width: 50%">{{ portion.aliment_obj.titre }}</td>
+                            {% else %}
+                                <td style="width: 10%">{{ portion.nombre }} g</td>
+                                <td style="width: 50%">{{ portion.aliment_obj.titre }}</td>
+                            {% endif %}
+                            {% if portion.proteines_portion() > 0 %}
+                            <td style="width: 20%">{{ portion.proteines_portion() }} g de protéines</td>
+                            {% else %}
+                            <td style="width: 20%">-</td>
+                            {% endif %}
+                            <td style="width: 20%">{{ portion.kcal_portion() }} kcal</td>
+                    </tr>
+    {% endfor %}
+    <table class="table table-striped table-bordered">
+        <tr class="text-center">
+            <th colspan="2" style="width: 60%;">Total</th>
+            <td style="width: 20%;">{{ diete.total_proteines()|round|int }} g de protéines</td>
+            <td style="width: 20%;">{{ diete.total_kcal()|round|int }} kcal</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
