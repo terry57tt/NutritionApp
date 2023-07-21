@@ -1,49 +1,67 @@
 {% extends 'base.html' %}
 {% set page = 'accueil' %}
 {% include "navbar.html" %}
+{% include "flash_messages.html" %}
+
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
-<div class="content">
-    <div class="d-flex justify-content-center bg-light ">
-      <div class="section text-center">
 
-        <h2 class="subtitle text-center">Informations</h2>
-        <ul class="list-unstyled">
-            <li><strong>{{ utilisateur.age }} ans</strong></li>
-            <li><strong>{{ utilisateur.taille }} cm</strong></li>
-            <li><strong>{{ utilisateur.poids }} kg</strong></li>
+<div class="info_user">
+  <p class="text-center">
+    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Informations</button>
+    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Calories</button>
+    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Macronutriments</button>  
+  </p>
+  <div class="row">
+    <div class="col">
+      <div class="collapse multi-collapse" id="multiCollapseExample1">
+        <div class="bg-light">
+          <ul class="list-unstyled text-center">
+            <li><strong>Âge: </strong>{{ utilisateur.age }} ans</li>
+            <li><strong>Taille: </strong>{{ utilisateur.taille }} cm</li>
+            <li><strong>Poids: </strong>{{ utilisateur.poids }} kg</li>
           </ul>
+        </div>
       </div>
-      <div class="section text-center">
-        <h2 class="subtitle text-center">Calories</h2>
-        <ul class="list-unstyled">
-          <li><strong>Sèche: </strong>2500</li>
-          <li><strong>Maintien: </strong>3000</li>
-          <li><strong>Prise de Masse: </strong>3500</li>
-        </ul>
+    </div>
+    <div class="col">
+      <div class="collapse multi-collapse" id="multiCollapseExample2">
+        <div class="bg-light">
+          <ul class="list-unstyled text-center">
+            <li><strong>Sèche: </strong>2500</li>
+            <li><strong>Maintien: </strong>3000</li>
+            <li><strong>Prise de Masse: </strong>3500</li>
+          </ul>
+        </div>
       </div>
-      <div class="section text-center">
-        <h2 class="subtitle">Macronutriments</h2>
-        <ul class="list-unstyled">
-          <li><strong>Protéines: </strong>90-135</li>
-          <li><strong>Lipides: </strong>50-70</li>
-          <li><strong>Glucides: </strong>200-250</li>
-        </ul>
+    </div>
+    <div class="col">
+      <div class="collapse multi-collapse" id="multiCollapseExample3">
+        <div class="bg-light">
+          <ul class="list-unstyled text-center">
+            <li><strong>Protéines: </strong>90-135</li>
+            <li><strong>Lipides: </strong>50-70</li>
+            <li><strong>Glucides: </strong>200-250</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  {% set navbar_included = true %}
-  {% include 'display_diete.html' %}
+{% set navbar_included = true %}
+{% include 'display_diete.html' %}
 
-  <div>
+  <div class="btn_changer_imprimer">
     <div class="d-flex justify-content-center">
       <div class="section text-center">
         <a href="{{ url_for('changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
         <a href="{{ url_for('print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary">Imprimer diète</a>
+        <a href="{{ url_for('export_csv',id_diete=diete.id) }}" class="btn btn-primary">CSV</a>
       </div>
+    </div>
   </div>
-</div>
 
 {% endblock %}
+

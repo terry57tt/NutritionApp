@@ -5,6 +5,7 @@ from datetime import datetime, date
 from sqlalchemy.orm import joinedload
 import pdfkit
 from urllib.parse import urlparse
+import pandas as pd
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,7 +17,7 @@ app.jinja_env.add_extension('jinja2.ext.do')
 db = SQLAlchemy(app)
 from models import *
 
-
+app.secret_key = 'secret_key'
 
 # ----------------- Accueil ----------------- #
 
@@ -72,7 +73,8 @@ def signup_utilisateur():
 def dietes():
     dietes = diete.query.all()
     current_date = date.today().isoformat()
-    return render_template('dietes.html', dietes=dietes, date=current_date)
+    utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
+    return render_template('dietes.html', dietes=dietes, date=current_date, utilisateur=utilisateur_courrant)
 
 @app.route('/ajouter_diete', methods=['GET', 'POST'])
 def ajouter_diete():
@@ -90,7 +92,11 @@ def modifier_diete(id):
 
 @app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
 def supprimer_diete(id):
-    diete.query.filter_by(id=id).delete()
+    diete_courante = diete.query.get(id)
+    portions_liees = diete_courante.portions_associees()
+    for portion in portions_liees:
+        db.session.delete(portion)
+    db.session.delete(diete_courante)
     db.session.commit()
     return redirect('/dietes')
 
@@ -124,7 +130,7 @@ def default_root():
 @app.route('/print_diete_pdf/<int:id_diete>', methods=['GET', 'POST'])
 def print_diete_pdf(id_diete):
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
-    diet = diete.query.get(utilisateur_courrant.diete)
+    diet = diete.query.get(id_diete)
     out = render_template("diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
     return html_to_pdf(out)
 
@@ -152,7 +158,13 @@ def ajouter_aliment():
         glucides = int(request.form['glucides']) if request.form['glucides'] else None
         lipides = int(request.form['lipides']) if request.form['lipides'] else None
         categorie = request.form['categorie']
-        photo = request.form['photo']
+        fichier = request.files['fichier_photo']
+        photo = ''
+        if fichier != '':
+            if fichier.filename.endswith('.jpg'):
+                photo = fichier.filename
+            else :
+                flash('Erreur dans le chargement de la photo (format jpg uniquement)', 'danger')
         description = request.form['description']
         unite = 'unite' in request.form
 
@@ -171,7 +183,7 @@ def ajouter_aliment():
         db.session.add(food)
         db.session.commit()
 
-        # Redirection vers une autre page après l'ajout de l'aliment
+        flash('L\'aliment a été ajouté avec succès', 'success')
         return redirect('/aliments')
 
     return render_template('ajouter_aliment.html')
@@ -219,6 +231,152 @@ def enlever_aliment_diete(id_portion, id_diete):
     db.session.commit()
 
     return redirect(url_for('creer_diete', id=id_diete))
+'''class aliment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(255), nullable=True)
+    kcal = db.Column(db.Integer, nullable=True)
+    proteines = db.Column(db.Integer, nullable=True)
+    glucides = db.Column(db.Integer, nullable=True)
+    lipides = db.Column(db.Integer, nullable=True)
+    categorie = db.Column(db.String(255), nullable=True) # légume, fruit, féculent...
+    photo = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    unite = db.Column(db.Boolean, nullable=True)
+
+class portion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
+    aliment = db.Column(db.Integer, db.ForeignKey('aliment.id'))
+    nombre = db.Column(db.Integer, nullable=False, server_default='0') # qtt en g ou nb de portions
+    label_portion = db.Column(db.Integer, nullable=False, server_default='0') # 1=matin, 2=collation matin, 3=midi, 4=collation aprem, 5=soir, 6=collation soir
+    diete_obj = db.relationship('diete', backref=db.backref('portions'))
+    aliment_obj = db.relationship('aliment', backref=db.backref('portions'))
+
+    def unite(self):
+        return self.aliment_obj.unite
+
+    def proteines_portion(self):
+        if self.unite():
+            return round(self.aliment_obj.proteines * self.nombre)
+        else:
+            return round(self.aliment_obj.proteines * self.nombre * 0.01)
+        
+    def kcal_portion(self):
+        if self.unite():
+            return round(self.aliment_obj.kcal * self.nombre)
+        else:
+            return round(self.aliment_obj.kcal * self.nombre * 0.01)
+
+class diete(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titre_diete = db.Column(db.String(255), nullable=True) # nom de la diete
+    createur = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=True)
+    date = db.Column(db.Date, nullable=True)
+
+    createur_obj = db.relationship('utilisateur', backref=db.backref('dietes'), foreign_keys=[createur])
+    
+    def portions_associees(self):
+        return portion.query.filter(portion.diete == self.id).order_by(portion.label_portion).all()
+    
+    def total_kcal(self):
+        return sum([portion.kcal_portion() for portion in self.portions_associees()])
+    
+    def total_proteines(self):
+        return sum([portion.proteines_portion() for portion in self.portions_associees()])
+
+class utilisateur(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(255), nullable=True)
+    prenom = db.Column(db.String(255), nullable=True)
+    mail = db.Column(db.String(255), nullable=True)
+    mdp = db.Column(db.String(255), nullable=True)
+    age = db.Column(db.Integer, nullable=True)
+    taille = db.Column(db.Integer, nullable=True)
+    poids = db.Column(db.Integer, nullable=True)
+    sexe = db.Column(db.String(255), nullable=True)
+    diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
+
+    diete_obj = db.relationship('diete', backref=db.backref('utilisateurs'), foreign_keys=[diete])'''
+@app.route('/export_csv/<int:id_diete>', methods=['GET', 'POST'])
+def export_csv(id_diete):
+    diet = diete.query.get(id_diete)
+    portions = diet.portions_associees()
+    csv = "Aliment,Quantité,Repas\n"
+    for portion in portions:
+        csv += f"{portion.aliment_obj.titre},{portion.nombre},{portion.label_portion}\n"
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                    f"attachment; filename={diet.titre_diete}.csv"})
+
+@app.route('/importer_csv', methods=['POST'])
+def importer_csv():
+    fichier = request.files['fichier_csv']
+    if fichier.filename.endswith('.csv'):
+        
+        df = pd.read_csv(fichier)
+        nouvelle_diete = diete(titre_diete=fichier.filename, createur=1, date=datetime.now())
+        db.session.add(nouvelle_diete)
+        db.session.commit()
+
+        for index, row in df.iterrows():
+            aliment_courant = aliment.query.filter_by(titre=row['Aliment']).first()
+            if aliment_courant is None:
+                aliment_courant = aliment(titre=row['Aliment'], kcal=0, proteines=0, glucides=0, lipides=0, categorie='', photo='', description='', unite=0)
+                db.session.add(aliment_courant)
+                db.session.commit()
+            nouvelle_portion = portion(diete=nouvelle_diete.id, aliment=aliment_courant.id, nombre=row['Quantité'], label_portion=row['Repas'])
+            db.session.add(nouvelle_portion)
+            db.session.commit()
+        
+        flash('La diète a été importée avec succès', 'success')
+    else:
+        flash('Erreur dans le chargement du fichier', 'danger')
+        
+    return redirect(url_for('dietes'))
+
+@app.route('/export_csv_aliment', methods=['GET', 'POST'])
+def export_csv_aliment():
+    aliments = aliment.query.all()
+    csv = "Titre,kcal,proteines,glucides,lipides,categorie,photo,description,unite\n"
+    for aliment_courant in aliments:
+        csv += f"{aliment_courant.titre},{aliment_courant.kcal},{aliment_courant.proteines},{aliment_courant.glucides},{aliment_courant.lipides},{aliment_courant.categorie},{aliment_courant.photo},{aliment_courant.description},{aliment_courant.unite}\n"
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                    f"attachment; filename=aliments.csv"})
+
+'''importer_photo_aliment'''
+@app.route('/importer_csv_aliment', methods=['POST'])
+def importer_csv_aliment():
+    fichier = request.files['fichier_aliment']
+    if fichier.filename.endswith('.csv'):
+        
+        df = pd.read_csv(fichier)
+        for index, row in df.iterrows():
+            aliment_courant = aliment.query.filter_by(titre=row['Titre']).first()
+            if aliment_courant is None:
+                aliment_courant = aliment(titre=row['Titre'], kcal=row['kcal'], proteines=row['proteines'], glucides=row['glucides'], lipides=row['lipides'], categorie=row['categorie'], photo=row['photo'], description=row['description'], unite=row['unite'])
+                db.session.add(aliment_courant)
+                db.session.commit()
+            else:
+                aliment_courant.titre=row['Titre']
+                aliment_courant.kcal=row['kcal']
+                aliment_courant.proteines=row['proteines']
+                aliment_courant.glucides=row['glucides']
+                aliment_courant.lipides=row['lipides']
+                aliment_courant.categorie=row['categorie']
+                aliment_courant.photo=row['photo']
+                aliment_courant.description=row['description']
+                aliment_courant.unite=row['unite']
+                db.session.commit()
+
+        flash('Les aliments ont été importés avec succès', 'success')
+    else:
+        flash('Erreur dans le chargement du fichier', 'danger')
+    return redirect(url_for('aliments'))
 
 #init bdd
 @app.route('/init')

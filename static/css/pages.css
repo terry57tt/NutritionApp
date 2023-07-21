@@ -1,5 +1,14 @@
 .content{
-    padding: 1cm 6cm 1cm 6cm;
+    padding: 0cm 6cm 0cm 6cm;
+}
+
+.content_aliments{
+    padding: 0.5cm 5cm 0cm 5cm;
+    margin-top: 0.5cm;
+}
+
+.info_user{
+    padding: 0.5cm 6cm 0.5cm 6cm;
 }
 
 .content_gerer_diete{
@@ -17,4 +26,8 @@
 
 .table td{
     text-align: center;
+}
+
+.btn_changer_imprimer{
+    padding-bottom: 2cm;
 }
