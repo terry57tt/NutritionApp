@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% set page = 'aliments' %}
+{% include "navbar.html" %}
+{% include "flash_messages.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+<div class="content">
+<h1 class="title">{% block title %} Chercher un aliment {% endblock %}</h1>
+<div class="content_aliments bg-light">
+    <div>
+        <form method="POST" action="{{ url_for('api_request') }}" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="titre">Recherche</span>
+                    </div>
+                    <input type="text" id="recherche" name="recherche" class="form-control" placeholder="Rechercher un aliment" required>
+                </div>
+                <div class="input-group mb-3 col-md-6">
+                    <input type="number" id="kcal" name="kcal" class="form-control" placeholder="Kcal" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="kcal">Kcal</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row text-center" style="padding-bottom: 0.5cm;">
+                <div class="col-md-12">
+                    <input type="submit" value="Ajouter" class="btn btn-primary">
+                </div>
+            </div>
+        </form>               
+    </div>
+</div>
+
+<script src="{{root}}{{ url_for('static', filename='js/aliment.js') }}"></script>
+
+{% endblock %}

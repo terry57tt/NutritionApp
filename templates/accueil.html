@@ -6,7 +6,6 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
-
 <div class="info_user">
   <p class="text-center">
     <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Informations</button>
@@ -29,9 +28,14 @@
       <div class="collapse multi-collapse" id="multiCollapseExample2">
         <div class="bg-light">
           <ul class="list-unstyled text-center">
-            <li><strong>Sèche: </strong>2500</li>
-            <li><strong>Maintien: </strong>3000</li>
-            <li><strong>Prise de Masse: </strong>3500</li>
+            {% if utilisateur.sexe == 'homme' %}
+            {% set calories = (((13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607)* 1.55)|round|int %}
+            {% else %}
+            {% set calories = (((9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051)* 1.55)|round|int %}
+            {% endif %}
+            <li><strong>Sèche: </strong>{{ calories - 500 }} kcal</li>
+            <li><strong>Maintien: </strong>{{ calories }} kcal</li>
+            <li><strong>Prise de Masse: </strong>{{ calories + 500 }} kcal</li>
           </ul>
         </div>
       </div>
@@ -40,18 +44,36 @@
       <div class="collapse multi-collapse" id="multiCollapseExample3">
         <div class="bg-light">
           <ul class="list-unstyled text-center">
-            <li><strong>Protéines: </strong>90-135</li>
-            <li><strong>Lipides: </strong>50-70</li>
-            <li><strong>Glucides: </strong>200-250</li>
+            <li><strong>Protéines: </strong>{{ (utilisateur.poids * 1.8)|round|int }}-{{ (utilisateur.poids * 2.2)|round|int }} g</li>
+            <li><strong>Lipides: </strong>{{ (utilisateur.poids * 0.8)|round|int }}-{{ (utilisateur.poids * 1)|round|int }} g</li>
+            <li><strong>Glucides: </strong>{{ (calories * 0.4 / 4)|round|int }}-{{ (calories * 0.6 / 4)|round|int }} g</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
+{% if diete != None %}
+  <div class="programming-stats">
+    <div class="chart-container">
+      <canvas class="my-chart"></canvas>
+    </div>
+    <div class="details">
+      <ul></ul>
+    </div>
+  </div>
+{% endif %}
 </div>
 
 {% set navbar_included = true %}
-{% include 'display_diete.html' %}
+
+{% if diete != None %}
+
+  {% set total_macros = diete.total_proteines()*4 + diete.total_lipides()*9 + diete.total_glucides()*4 %}
+  {% set pourcentage_proteines = (diete.total_proteines()*4 / total_macros * 100)|round|int %}
+  {% set pourcentage_lipides = (diete.total_lipides()*9 / total_macros * 100)|round|int %}
+  {% set pourcentage_glucides = (diete.total_glucides()*4 / total_macros * 100)|round|int %}
+
+  {% include 'display_diete.html' %}
 
   <div class="btn_changer_imprimer">
     <div class="d-flex justify-content-center">
@@ -62,6 +84,61 @@
       </div>
     </div>
   </div>
+{% else %}
+
+  <h1 class="text-center" style="padding-bottom: 1cm;">Vous n'avez pas encore de diète</h1>
+  <div class="btn_changer_imprimer">
+    <div class="d-flex justify-content-center">
+      <div class="section text-center">
+        <a href="{{ url_for('changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir une diète</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+<script>
+  const chartData = {
+    labels: ["Glucides", "Lipides", "Protéines"],
+    data: [{{ pourcentage_glucides }}, {{ pourcentage_lipides }}, {{ pourcentage_proteines }}],
+  };
+  
+  const myChart = document.querySelector(".my-chart");
+  const ul = document.querySelector(".programming-stats .details ul");
+
+  new Chart(myChart, {
+    type: "doughnut",
+    data: {
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: "Macronutriments",
+          data: chartData.data,
+        },
+      ],
+    },
+    options: {
+      borderWidth: 10,
+      borderRadius: 2,
+      hoverBorderWidth: 0,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+    },
+  });
+  
+  const populateUl = () => {
+    chartData.labels.forEach((l, i) => {
+      let li = document.createElement("li");
+      li.innerHTML = `${l}: <span class='percentage'>${chartData.data[i]}%</span>`;
+      ul.appendChild(li);
+    });
+  };
+  
+  populateUl();
+</script>
 
 {% endblock %}
 

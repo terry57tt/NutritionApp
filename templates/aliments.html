@@ -70,9 +70,26 @@
                     <span class="input-group-text">Description</span>
                     <textarea class="form-control" id="description" name="description" aria-label="With textarea"></textarea>
                 </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" id="unite" name="unite" type="checkbox">
-                    <label class="form-check-label" for="unite">Unité</label>
+
+                <div class="input-group mb-3 col-md-2">
+                    <div class="form-check">
+                        <input class="form-check-input" value="0" type="radio" name="unite" id="flexRadioDefault1" value="100 g" required>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            100 g
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" value="1" type="radio" name="unite" id="flexRadioDefault2" value="1 portion" required>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            1 portion
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" value="2" type="radio" name="unite" id="flexRadioDefault3" value="100 mL" required  >
+                        <label class="form-check-label" for="flexRadioDefault3">
+                            100 mL
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-row text-center" style="padding-bottom: 0.5cm;">
@@ -108,7 +125,7 @@
     </div>
 </div>
         <table class="table table-striped table-bordered">
-            <tr>
+            <tr class="text-center">
                 <th>Titre</th>
                 <th>Kcal</th>
                 <th>Protéines</th>
@@ -123,17 +140,19 @@
             <tr class="element_aliment_liste">
                 <td style="width: 20%">{{ aliment.titre }}</td>
                 <td style="width: 10%">{{ aliment.kcal }}</td>
-                <td style="width: 10%">{{ aliment.proteines }}</td>
-                <td style="width: 10%">{{ aliment.glucides }}</td>
-                <td style="width: 10%">{{ aliment.lipides }}</td>
+                <td style="width: 10%">{{ aliment.proteines }} g</td>
+                <td style="width: 10%">{{ aliment.glucides }} g</td>
+                <td style="width: 10%">{{ aliment.lipides }} g</td>
                 <td style="width: 10%">{{ aliment.categorie }}</td>
 
                 {% if aliment.unite == 1 %}
-                <td style="width: 10%">pour 100 g</td>
-                {% else %}
                 <td style="width: 10%">pour 1 portion</td>
+                {% elif aliment.unite == 2 %}
+                <td style="width: 10%">pour 100 mL</td>
+                {% else %}
+                <td style="width: 10%">pour 100 g</td>
                 {% endif %}
-                <td style="width: 10%">
+            <td style="width: 10%">
                     <a href="{{ url_for('modifier_aliment', id=aliment.id) }}" class="btn btn-sm btn-primary">➜</a>
                 </td>
                 <td style="width: 10%">
@@ -144,32 +163,6 @@
         </table>
 </div>
 
-<script>
-    function search_aliment(){
-    let input = document.getElementById('searchbar_aliment').value
-    input=input.toLowerCase();
-    let x = document.getElementsByClassName('element_aliment_liste');
-        
-      for (i = 0; i < x.length; i++) { 
-          if (!x[i].innerHTML.toLowerCase().includes(input)) {
-              x[i].style.display="none";
-          }
-          else {
-              x[i].style.display="table-row";                 
-          }
-      }
-}
-
-function checkFileSelectedAliment() {
-    var fileInput = document.getElementById('fichier_aliment');
-    var button = document.getElementById('bouton_importer_aliment');
-    if (fileInput.files.length > 0) {
-        button.disabled = false;
-    }
-    else {
-        button.disabled = true;
-    }
-}
-</script>
+<script src="{{root}}{{ url_for('static', filename='js/aliment.js') }}"></script>
 
 {% endblock %}

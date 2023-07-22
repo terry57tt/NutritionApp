@@ -28,5 +28,11 @@
             {% endfor %}
         </table>
     </div>
+    <div class="create_diet">
+        <form action="{{ url_for('ajouter_diete') }}" method="POST" class="form-inline justify-content-center">
+            <input type="text" id="titre" name="titre" class="form-control" placeholder="Créer une diète" required>
+            <button type="submit" class="btn btn-primary">Valider</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

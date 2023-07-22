@@ -3,21 +3,21 @@ from sqlalchemy.sql import func
 
 class aliment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(255), nullable=True)
-    kcal = db.Column(db.Integer, nullable=True)
-    proteines = db.Column(db.Integer, nullable=True)
-    glucides = db.Column(db.Integer, nullable=True)
-    lipides = db.Column(db.Integer, nullable=True)
-    categorie = db.Column(db.String(255), nullable=True) # légume, fruit, féculent...
-    photo = db.Column(db.String(255), nullable=True)
-    description = db.Column(db.String(255), nullable=True)
-    unite = db.Column(db.Boolean, nullable=True)
+    titre = db.Column(db.String(255), nullable=True, unique=True)
+    kcal = db.Column(db.Integer, nullable=True, server_default='0')
+    proteines = db.Column(db.Integer, nullable=True, server_default='0')
+    glucides = db.Column(db.Integer, nullable=True, server_default='0')
+    lipides = db.Column(db.Integer, nullable=True, server_default='0')
+    categorie = db.Column(db.String(255), nullable=True, server_default="Autre") # légume, fruit, féculent...
+    photo = db.Column(db.String(255), nullable=True, server_default='')
+    description = db.Column(db.String(255), nullable=True, server_default='')
+    unite = db.Column(db.Integer, nullable=True, server_default='0') # 0 = 100g, 1 = 1 unité, 2 = mL
 
 class portion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
     aliment = db.Column(db.Integer, db.ForeignKey('aliment.id'))
-    nombre = db.Column(db.Integer, nullable=False, server_default='0') # qtt en g ou nb de portions
+    nombre = db.Column(db.Integer, nullable=False, server_default='0')
     label_portion = db.Column(db.Integer, nullable=False, server_default='0') # 1=matin, 2=collation matin, 3=midi, 4=collation aprem, 5=soir, 6=collation soir
     diete_obj = db.relationship('diete', backref=db.backref('portions'))
     aliment_obj = db.relationship('aliment', backref=db.backref('portions'))
@@ -25,17 +25,29 @@ class portion(db.Model):
     def unite(self):
         return self.aliment_obj.unite
 
+    def kcal_portion(self):
+        if self.unite() == 1: # si l'aliment est en unité (kcal * nombre)
+            return round(self.aliment_obj.kcal * self.nombre)
+        else: # aliment == 0 (kcal * nombre * 0.01 * 100g) ; aliment == 2 (kcal * nombre * 0.01 * 100mL) 
+            return round(self.aliment_obj.kcal * self.nombre * 0.01)
+        
     def proteines_portion(self):
-        if self.unite():
+        if self.unite() == 1:
             return round(self.aliment_obj.proteines * self.nombre)
         else:
             return round(self.aliment_obj.proteines * self.nombre * 0.01)
         
-    def kcal_portion(self):
-        if self.unite():
-            return round(self.aliment_obj.kcal * self.nombre)
+    def glucides_portion(self):
+        if self.unite() == 1:
+            return round(self.aliment_obj.glucides * self.nombre)
         else:
-            return round(self.aliment_obj.kcal * self.nombre * 0.01)
+            return round(self.aliment_obj.glucides * self.nombre * 0.01)
+        
+    def lipides_portion(self):
+        if self.unite() == 1:
+            return round(self.aliment_obj.lipides * self.nombre)
+        else:
+            return round(self.aliment_obj.lipides * self.nombre * 0.01)
 
 class diete(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,6 +65,12 @@ class diete(db.Model):
     
     def total_proteines(self):
         return sum([portion.proteines_portion() for portion in self.portions_associees()])
+    
+    def total_glucides(self):
+        return sum([portion.glucides_portion() for portion in self.portions_associees()])
+    
+    def total_lipides(self):
+        return sum([portion.lipides_portion() for portion in self.portions_associees()])
 
 class utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,3 +85,9 @@ class utilisateur(db.Model):
     diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
 
     diete_obj = db.relationship('diete', backref=db.backref('utilisateurs'), foreign_keys=[diete])
+
+    def mail_partie1(self):
+        return self.mail.split('@')[0]
+    
+    def mail_partie2(self):
+        return self.mail.split('@')[1]

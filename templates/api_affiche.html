@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% set page = 'aliments' %}
+{% include "navbar.html" %}
+{% include "flash_messages.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+<div class="content">
+<h1 class="title">{% block title %} Liste des aliments {% endblock %}</h1>
+<div class="content_aliments bg-light">
+<!--from openfoodfacts import API, APIVersion, Country, Environment, Flavor
+
+api = API(
+    username=None,
+    password=None,
+    country=Country.world,
+    flavor=Flavor.off,
+    version=APIVersion.v2,
+    environment=Environment.org,
+)
+
+@app.route('/api_recherche')
+def api_recherche():
+    return render_template('api_recherche.html')
+
+@app.route('/api_request', methods=['GET', 'POST'])
+def api_request():
+    if request.method == 'POST':
+        recherche = request.form['recherche']
+        results = api.product.text_search(recherche)
+        return render_template('api_affiche.html', results=results)
+    return render_template('api_recherche.html')-->
+    
+    {% for aliment in aliments %}
+    <div class="aliment">
+        <div class="aliment_img">
+            <img src="{{aliment.image}}" alt="image de l'aliment">
+        </div>
+        <div class="aliment_info">
+            <h2>{{aliment.name}}</h2>
+            <p>{{aliment.description}}</p>
+            <p>Code barre : {{aliment.barcode}}</p>
+            <p>Quantité : {{aliment.quantity}}</p>
+            <p>Marque : {{aliment.brand}}</p>
+            <p>Magasin : {{aliment.store}}</p>
+            <p>Score nutritionnel : {{aliment.nutrition_grade}}</p>
+            <p>URL : <a href="{{aliment.url}}">{{aliment.url}}</a></p>
+            <p>Categories : {{aliment.categories}}</p>
+            <p>Ingredients : {{aliment.ingredients}}</p>
+            <p>Ingredients : {{aliment.ingredients_text}}</p>
+            <p>Ingredients : {{aliment.ingredients_text_fr}}</p>
+            <p>Ingredients : {{aliment.ingredients_text_with_allergens}}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<script src="{{root}}{{ url_for('static', filename='js/aliment.js') }}"></script>
+
+{% endblock %}

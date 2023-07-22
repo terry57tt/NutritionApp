@@ -4,7 +4,139 @@
 {% include "flash_messages.html" %}
 
 {% block content %}
-    <h1 class="title">{% block title %} Réglages {% endblock %}</h1>
-    <div class="content">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+<div class="content">
+<h1 class="title">{% block title %} Réglages {% endblock %}</h1>
+<div class="content_aliments bg-light">
+        <form method="POST" action="{{ url_for('modifier_utilisateur', id=utilisateur.id) }}"  enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="titre">Nom</span>
+                    </div>
+                    <input type="text" id="nom" name="nom" class="form-control" placeholder="Nom" value="{{ utilisateur.nom }}" required>
+                </div>
+                <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="titre">Prénom</span>
+                    </div>
+                    <input type="text" id="prenom" name="prenom" class="form-control" placeholder="Prénom" value="{{ utilisateur.prenom }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="input-group mb-3 col-md-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="age">Âge</span>
+                    </div>
+                    <input type="number" id="age" name="age" class="form-control" placeholder="Âge" value="{{ utilisateur.age }}" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="age">ans</span>
+                    </div>
+                </div>
+                <div class="input-group mb-3 col-md-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="taille">Taille</span>
+                    </div>
+                    <input type="number" id="taille" name="taille" class="form-control" placeholder="Taille" value="{{ utilisateur.taille }}" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="taille">cm</span>
+                    </div>
+                </div>
+                <div class="input-group mb-3 col-md-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="poids">Poids</span>
+                    </div>
+                    <input type="number" id="poids" name="poids" class="form-control" placeholder="Poids" value="{{ utilisateur.poids }}" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="poids">kg</span>
+                    </div>
+                </div>  
+            </div>
+            <div class="form-row">
+                <div class="input-group mb-3 col-md-12">
+                    <input type="text" id="mail" name="mail" class="form-control" placeholder="Mail" value="{{ utilisateur.mail_partie1() }}" required>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroupPrepend">@</span>
+                    </div>
+                    <input type="text" id="boite_mail" name="boite_mail" class="form-control" placeholder="Boite mail" value="{{ utilisateur.mail_partie2() }}" required>
+                    </div>
+                    <div class="form-row text-center" style="padding-bottom: 0.5cm;">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="input-group mb-3 d-flex justify-content-center">
+                    <div class="form-check col-md-2">
+                        {% if utilisateur.sexe == "homme" %}
+                        <input class="form-check-input" value="homme" type="radio" name="sexe" id="flexRadioDefault1" checked required>
+                        {% else %}
+                        <input class="form-check-input" value="homme" type="radio" name="sexe" id="flexRadioDefault1" required>
+                        {% endif %}
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Homme
+                        </label>
+                    </div>
+                    <div class="form-check col-md-2">
+                        {% if utilisateur.sexe == "femme" %}
+                        <input class="form-check-input" value="femme" type="radio" name="sexe" id="flexRadioDefault2" checked required>
+                        {% else %}
+                        <input class="form-check-input" value="femme" type="radio" name="sexe" id="flexRadioDefault2" required>
+                        {% endif %}
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Femme
+                        </label>
+                    </div>
+                </div>
+            </div>
+                    
+            <div class="form-row text-center" style="padding-bottom: 0.5cm;">
+                <div class="col-md-12">
+                    <input type="submit" value="Modifier" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+        
     </div>
+    <div style="margin-top: 0.5cm; padding: 0.5cm 15% 0.5cm 15%;" class="bg-light">
+        {% set min = 0 %}
+        {% set max = 40 %}
+
+        {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
+        {% set imc_progress = (imc / max) * 100 %}
+
+        <p class="text-center">Votre IMC est de {{ imc }}</p>
+            {% if imc < 18.5 %}
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{ imc }}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
+            </div>
+            {% elif imc < 25 %}
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
+            </div>
+            {% elif imc < 30 %}
+            <div class="progress">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
+            </div>
+            {% elif imc < 35 %}
+            <div class="progress">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
+            </div>
+            {% elif imc > 40 %}
+            <div class="progress">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+            </div>
+            {% else %}
+            <div class="progress">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+            </div>
+            {% endif %}
+
+            <div class="progress" style="margin-top: 0.5cm;">
+                <div class="progress-bar" role="progressbar" style="width: {{ (18.5/max)*100 }}%" aria-valuenow="18.5" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ (6.5 / max)*100 }}%" aria-valuenow="25" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="30" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="35" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+            </div>
+        </div>
+
 {% endblock %}

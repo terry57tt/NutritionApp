@@ -58,14 +58,5 @@
         </div>
     </div>
 </div>
-<script>
-    function checkFileSelected() {
-        var fileInput = document.getElementById('fichier_csv');
-        var button = document.getElementById('bouton_importer');
-        if (fileInput.files.length > 0) {
-            button.disabled = false;
-        }
-    }
-</script>
-
+<script src="{{ url_for('static', filename='js/dietes.js') }}"></script>
 {% endblock %}
