@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-{% set page = 'accueil' %}
-{% include "navbar.html" %}
-{% include "flash_messages.html" %}
 
 {% block content %}
+{% set page = 'accueil' %}
+
+{% set place = ["accueil"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
 <div class="info_user">
@@ -139,6 +143,5 @@
   
   populateUl();
 </script>
-
 {% endblock %}
 

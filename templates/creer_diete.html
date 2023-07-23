@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-{% set page = 'dietes' %}
-{% include "navbar.html" %}
-{% include "flash_messages.html" %}
 
 {% block content %}
+{% set page = 'dietes' %}
+
+{% set place = ["accueil","dietes","modifier_diete"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
 <link rel="stylesheet" href="{{root}}{{ url_for('static', filename='css/pages.css') }}">
 
 <div class="content_gerer_diete">

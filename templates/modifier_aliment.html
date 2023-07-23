@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-{% set page = 'aliments' %}
-{% include "navbar.html" %}
-{% include "flash_messages.html" %}
 
 {% block content %}
+{% set page = 'aliments' %}
+
+{% set place = ["accueil","aliments","modifier_aliment"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 <div class="content">
 <h1 class="title">{% block title %} Aliments {% endblock %}</h1>

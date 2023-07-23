@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
-{% if not navbar_included %}
-    {% set navbar_included = true %}
-    {% include "navbar.html" %}
-{% endif %}
-
 {% block content %}
+{% if not navbar_included %}
+{% set navbar_included = true %}
+
+{% set place = ["accueil","dietes","display_diete"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
+{% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 <div class="content">
         <h2 class="text-center"><b>{{ diete.titre_diete }}</b></h2>

@@ -74,10 +74,17 @@ def data_reader():
 # page d'accueil
 @app.route('/')
 def accueil():
+    '''{% for item in breadcrumb %}
+      {% if not loop.last %}
+          <li><a href="{{ item.url }}">{{ item.title }}</a> &gt;</li>
+      {% else %}
+          <li>{{ item.title }}</li>
+      {% endif %}
+  {% endfor %}'''
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
     if utilisateur_courrant is not None:
         diet = diete.query.get(utilisateur_courrant.diete)
-        return render_template('accueil.html', utilisateur=utilisateur_courrant, diete=diet)
+        return render_template('accueil.html', utilisateur=utilisateur_courrant, diete=diet, breadcrumb=[{'title': 'Accueil', 'url': '/'}])
     else:
         return "Vous devez créer un utilisateur : <a href='/init'>Créer un utilisateur</a>"
 
