@@ -74,16 +74,9 @@ def data_reader():
 # page d'accueil
 @app.route('/')
 def accueil():
-    '''{% for item in breadcrumb %}
-      {% if not loop.last %}
-          <li><a href="{{ item.url }}">{{ item.title }}</a> &gt;</li>
-      {% else %}
-          <li>{{ item.title }}</li>
-      {% endif %}
-  {% endfor %}'''
-    utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
+    utilisateur_courrant = utilisateur.get_by_id(1)
     if utilisateur_courrant is not None:
-        diet = diete.query.get(utilisateur_courrant.diete)
+        diet = diete.get_by_id(utilisateur_courrant.diete)
         return render_template('accueil.html', utilisateur=utilisateur_courrant, diete=diet, breadcrumb=[{'title': 'Accueil', 'url': '/'}])
     else:
         return "Vous devez créer un utilisateur : <a href='/init'>Créer un utilisateur</a>"
@@ -127,10 +120,9 @@ def signup_utilisateur():
 
 # ----------------- Diètes ----------------- #
 
-# page des diètes
 @app.route('/dietes')
 def dietes():
-    dietes = diete.query.all()
+    dietes = diete.get_all()
     current_date = date.today().isoformat()
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
     return render_template('dietes.html', dietes=dietes, date=current_date, utilisateur=utilisateur_courrant)
@@ -151,7 +143,7 @@ def modifier_diete(id):
 
 @app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
 def supprimer_diete(id):
-    diete_courante = diete.query.get(id)
+    diete_courante = diete.get_by_id(id)
     portions_liees = diete_courante.portions_associees()
     for portion in portions_liees:
         db.session.delete(portion)
@@ -161,18 +153,25 @@ def supprimer_diete(id):
 
 @app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
 def voir_diete(id):
-    diet = diete.query.get(id)
+    diet = diete.get_by_id(id)
     return render_template('display_diete.html', root = default_root(), diete=diet)
 
 @app.route('/print_diete/<int:id>', methods=['GET', 'POST'])
 def print_diete(id):
     return redirect('/dietes')
 
+@app.route('/change_title/<int:id>/<string:title>', methods=['GET', 'POST'])
+def change_title(id, title):
+    diet = diete.get_by_id(id)
+    diet.titre_diete = title
+    db.session.commit()
+    return redirect('/dietes')
+
 #changer_diete
 @app.route('/changer_diete/<int:id_utilisateur>', methods=['GET', 'POST'])
 def changer_diete(id_utilisateur):
     utilisateur_courrant = utilisateur.query.filter_by(id=id_utilisateur).first()
-    dietes = diete.query.all()
+    dietes = diete.get_all()
     return render_template('changer_diete.html', utilisateur=utilisateur_courrant, dietes=dietes)
 
 @app.route('/choisir_diete/<int:id>/<int:id_utilisateur>', methods=['GET', 'POST'])
@@ -189,7 +188,7 @@ def default_root():
 @app.route('/print_diete_pdf/<int:id_diete>', methods=['GET', 'POST'])
 def print_diete_pdf(id_diete):
     utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
-    diet = diete.query.get(id_diete)
+    diet = diete.get_by_id(id_diete)
     out = render_template("diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
     return html_to_pdf(out)
 
@@ -204,7 +203,7 @@ def html_to_pdf(html,filename='diete.pdf',download=False):
 
 @app.route('/aliments')
 def aliments():
-    aliments = aliment.query.all()
+    aliments = aliment.get_all()
     return render_template('aliments.html', aliments=aliments)
 
 @app.route('/ajouter_aliment', methods=['GET', 'POST'])
@@ -248,13 +247,12 @@ def ajouter_aliment():
 
 @app.route('/modifier_aliment/<int:id>', methods=['GET', 'POST'])
 def modifier_aliment(id):
-    aliment_courant = aliment.query.get(id)
-    # TODO : modifier poulet : 30,1 --> erreur
+    aliment_courant = aliment.get_by_id(id)
     return render_template('modifier_aliment.html', aliment=aliment_courant)
 
 @app.route('/modifier_aliment_post/<int:id>', methods=['GET', 'POST'])
 def modifier_aliment_post(id):
-    aliment_courant = aliment.query.get(id)
+    aliment_courant = aliment.get_by_id(id)
     if request.method == 'POST':
         aliment_courant.titre = request.form['titre']
         aliment_courant.kcal = int(request.form['kcal']) if request.form['kcal'] else None
@@ -280,7 +278,21 @@ def modifier_aliment_post(id):
 
 @app.route('/supprimer_aliment/<int:id>', methods=['GET', 'POST'])
 def supprimer_aliment(id):
-    aliment.query.filter_by(id=id).delete()
+    aliment.get_by_id(id).delete()
+    db.session.commit()
+    return redirect('/aliments')
+
+@app.route('/valider_aliment/<int:id>', methods=['GET', 'POST'])
+def valider_aliment(id):
+    aliment_courant = aliment.get_by_id(id)
+    aliment_courant.valide = 1
+    db.session.commit()
+    return redirect('/aliments')
+
+@app.route('/invalider_aliment/<int:id>', methods=['GET', 'POST'])
+def invalider_aliment(id):
+    aliment_courant = aliment.get_by_id(id)
+    aliment_courant.valide = 0
     db.session.commit()
     return redirect('/aliments')
 
@@ -288,12 +300,12 @@ def supprimer_aliment(id):
 
 @app.route('/reglages')
 def reglages():
-    utilisateur_courrant = utilisateur.query.filter_by(id=1).first()
+    utilisateur_courrant = utilisateur.get_by_id(1)
     return render_template('reglages.html', utilisateur=utilisateur_courrant)
 
 @app.route('/modifier_utilisateur/<int:id>', methods=['GET', 'POST'])
 def modifier_utilisateur(id):
-    utilisateur_courrant = utilisateur.query.get(id)
+    utilisateur_courrant = utilisateur.get_by_id(id)
     if request.method == 'POST':
         utilisateur_courrant.nom = request.form['nom']
         utilisateur_courrant.prenom = request.form['prenom']
@@ -314,10 +326,10 @@ def modifier_utilisateur(id):
 
 @app.route('/creer_diete/<int:id>', methods=['GET', 'POST'])
 def creer_diete(id):
-    diete_courante = diete.query.get(id)
+    diete_courante = diete.get_by_id(id)
     portions_repas = diete_courante.portions_associees()
 
-    aliments = aliment.query.all()
+    aliments = aliment.get_all()
     return render_template('creer_diete.html', aliments=aliments, diete=diete_courante, portions_repas=portions_repas)
  
 @app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:label>', methods=['GET', 'POST'])
@@ -331,7 +343,7 @@ def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
 
 @app.route('/enlever_aliment_diete/<int:id_portion>/<int:id_diete>', methods=['GET', 'POST'])
 def enlever_aliment_diete(id_portion, id_diete):
-    portion_courante = portion.query.get(id_portion)    
+    portion_courante = portion.get_by_id(id_portion)    
 
     db.session.delete(portion_courante)    
     db.session.commit()
@@ -342,7 +354,7 @@ def enlever_aliment_diete(id_portion, id_diete):
 
 @app.route('/export_csv/<int:id_diete>', methods=['GET', 'POST'])
 def export_csv(id_diete):
-    diet = diete.query.get(id_diete)
+    diet = diete.get_by_id(id_diete)
     portions = diet.portions_associees()
     csv = "Aliment,Quantité,Repas\n"
     for portion in portions:
@@ -389,7 +401,7 @@ def importer_csv():
 
 @app.route('/export_csv_aliment', methods=['GET', 'POST'])
 def export_csv_aliment():
-    aliments = aliment.query.all()
+    aliments = aliment.get_all()
     csv = "titre,kcal,proteines,glucides,lipides,categorie,photo,description,unite\n"
     for aliment_courant in aliments:
         csv += f"{aliment_courant.titre},{aliment_courant.kcal},{aliment_courant.proteines},{aliment_courant.glucides},{aliment_courant.lipides},{aliment_courant.categorie},{aliment_courant.photo},{aliment_courant.description},{aliment_courant.unite}\n"
@@ -413,21 +425,25 @@ def importer_csv_aliment():
 
         for index, row in df.iterrows():
             aliment_courant = aliment.query.filter_by(titre=row['titre']).first()
-            if aliment_courant is None:
-                aliment_courant = aliment(titre=row['titre'], kcal=row['kcal'], proteines=row['proteines'], glucides=row['glucides'], lipides=row['lipides'], categorie=row['categorie'], photo=row['photo'], description=row['description'], unite=row['unite'])
-                db.session.add(aliment_courant)
-                db.session.commit()
-            else:
-                aliment_courant.titre=row['titre']
-                aliment_courant.kcal=row['kcal']
-                aliment_courant.proteines=row['proteines']
-                aliment_courant.glucides=row['glucides']
-                aliment_courant.lipides=row['lipides']
-                aliment_courant.categorie=row['categorie']
-                aliment_courant.photo=row['photo']
-                aliment_courant.description=row['description']
-                aliment_courant.unite=row['unite']
-                db.session.commit()
+            
+            try:
+                if aliment_courant is None:
+                    aliment_courant = aliment(titre=row['titre'], kcal=round(float(row['kcal']), 0), proteines=round(float(row['proteines']), 0), glucides=round(float(row['glucides']), 0), lipides=round(float(row['lipides']), 0), categorie=row['categorie'], photo=row['photo'], description=row['description'], unite=row['unite'])
+                    db.session.add(aliment_courant)
+                else:
+                    aliment_courant.titre=row['titre']
+                    aliment_courant.kcal=round(float(row['kcal']), 0)
+                    aliment_courant.proteines=round(float(row['proteines']), 0)
+                    aliment_courant.glucides=round(float(row['glucides']), 0)
+                    aliment_courant.lipides=round(float(row['lipides']), 0)
+                    aliment_courant.categorie=row['categorie']
+                    aliment_courant.photo=row['photo']
+                    aliment_courant.description=row['description']
+                    aliment_courant.unite=row['unite']
+            except:
+                flash('Erreur dans la lecture du fichier : ' + row['titre'] + ' (voir ligne ' + str(index + 2) + ')', 'danger')
+                return redirect(url_for('aliments'))
+        db.session.commit()
 
         flash('Les aliments ont été importés avec succès', 'success')
     else:

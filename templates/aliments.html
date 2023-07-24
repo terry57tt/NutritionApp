@@ -136,6 +136,7 @@
                 <th>Lipides</th>
                 <th>Catégorie</th>
                 <th>Unité</th>
+                <th>Valide</th>
                 <th>Modifier</th>
                 <th>Supprimer</th>
             </tr>
@@ -153,7 +154,16 @@
                 {% elif aliment.unite == 2 %}
                 <td style="width: 10%">pour 100 mL</td>
                 {% else %}
-                <td style="width: 10%">pour 100 g</td>
+                <td style="width: 10%">pour 100g</td>
+                {% endif %}
+                {% if aliment.valide == 1 %}
+                <td style="width: 10%">
+                        <a href="{{ url_for('invalider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-success green_dot"></a>
+                </td>
+                {% else %}
+                <td style="width: 10%">
+                        <a href="{{ url_for('valider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-danger red_dot"></a>
+                </td>
                 {% endif %}
             <td style="width: 10%">
                     <a href="{{ url_for('modifier_aliment', id=aliment.id) }}" class="btn btn-sm btn-primary">➜</a>
