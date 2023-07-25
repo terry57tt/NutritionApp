@@ -12,7 +12,7 @@
 <h1 class="title">{% block title %} Aliments {% endblock %}</h1>
 <div class="content_aliments bg-light">
     <div>
-        <form method="POST" action="{{ url_for('ajouter_aliment') }}"  enctype="multipart/form-data">
+        <form method="POST" action="{{ url_for('controllers.ajouter_aliment') }}"  enctype="multipart/form-data">
             <div class="form-row">
                 <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">
@@ -110,7 +110,7 @@
         </form>
     </div>
     <div class="input-group mb-3 col-md-6">
-        <form method="post" action="{{ url_for('importer_csv_aliment') }}" enctype="multipart/form-data">
+        <form method="post" action="{{ url_for('controllers.importer_csv_aliment') }}" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-10">
                     <div class="mb-3">
@@ -124,7 +124,7 @@
         </form>
     </div>  
     <div class="mb-3 col-md-2">
-        <a href="{{ url_for('export_csv_aliment') }}" class="btn btn-primary">Exporter</a>
+        <a href="{{ url_for('controllers.export_csv_aliment') }}" class="btn btn-primary">Exporter</a>
     </div>
 </div>
         <table class="table table-striped table-bordered">
@@ -158,18 +158,18 @@
                 {% endif %}
                 {% if aliment.valide == 1 %}
                 <td style="width: 10%">
-                        <a href="{{ url_for('invalider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-success green_dot"></a>
+                        <a href="{{ url_for('controllers.invalider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-success green_dot"></a>
                 </td>
                 {% else %}
                 <td style="width: 10%">
-                        <a href="{{ url_for('valider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-danger red_dot"></a>
+                        <a href="{{ url_for('controllers.valider_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-danger red_dot"></a>
                 </td>
                 {% endif %}
             <td style="width: 10%">
-                    <a href="{{ url_for('modifier_aliment', id=aliment.id) }}" class="btn btn-sm btn-primary">➜</a>
+                    <a href="{{ url_for('controllers.modifier_aliment', id=aliment.id) }}" class="btn btn-sm btn-primary">➜</a>
                 </td>
                 <td style="width: 10%">
-                    <a href="{{ url_for('supprimer_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-danger">X</a>
+                    <a href="{{ url_for('controllers.supprimer_aliment', id=aliment.id) }}" class="btn btn-sm btn-outline-danger">X</a>
                 </td>
             </tr>
             {% endfor %}

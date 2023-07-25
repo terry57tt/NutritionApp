@@ -25,15 +25,15 @@
                 <td>{{ diete.createur_obj.nom }}</td>
                 <td>{{ diete.date }}</td>
                 <td>
-                    <a href="{{ url_for('voir_diete', id=diete.id) }}" class="btn btn-primary">Voir</a>
-                    <a href="{{ url_for('choisir_diete', id=diete.id, id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir</a>
+                    <a href="{{ url_for('controllers.voir_diete', id=diete.id) }}" class="btn btn-primary">Voir</a>
+                    <a href="{{ url_for('controllers.choisir_diete', id=diete.id, id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir</a>
                 </td>
             </tr>
             {% endfor %}
         </table>
     </div>
     <div class="create_diet">
-        <form action="{{ url_for('ajouter_diete') }}" method="POST" class="form-inline justify-content-center">
+        <form action="{{ url_for('controllers.ajouter_diete') }}" method="POST" class="form-inline justify-content-center">
             <input type="text" id="titre" name="titre" class="form-control" placeholder="Créer une diète" required>
             <button type="submit" class="btn btn-primary">Valider</button>
         </form>

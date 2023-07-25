@@ -12,7 +12,7 @@
 <div class="content">
 <h1 class="title">{% block title %} Réglages {% endblock %}</h1>
 <div class="content_aliments bg-light">
-        <form method="POST" action="{{ url_for('modifier_utilisateur', id=utilisateur.id) }}"  enctype="multipart/form-data">
+        <form method="POST" action="{{ url_for('controllers.modifier_utilisateur', id=utilisateur.id) }}"  enctype="multipart/form-data">
             <div class="form-row">
                 <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">

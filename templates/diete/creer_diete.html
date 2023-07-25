@@ -78,7 +78,7 @@
               <td>{{ portion.proteines_portion() }} g/p</td>
               <td>{{ portion.kcal_portion() }} kcal</td>
               <td class="text-center">             
-                <a href="{{ url_for('enlever_aliment_diete', id_portion=portion.id, id_diete=diete.id) }}" class="btn btn-sm btn-outline-danger">X</a>
+                <a href="{{ url_for('controllers.enlever_aliment_diete', id_portion=portion.id, id_diete=diete.id) }}" class="btn btn-sm btn-outline-danger">X</a>
               </td>
             </tr>
             {% endfor %}
@@ -154,7 +154,7 @@
             </tr>
             {% endfor %}
           </table>
-            <a href="{{url_for('aliments')}}" class="btn btn-primary">Créer un aliment</a>
+            <a href="{{url_for('controllers.aliments')}}" class="btn btn-primary">Créer un aliment</a>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand ms-5" href="{{url_for('accueil')}}">
+  <a class="navbar-brand ms-5" href="{{url_for('controllers.accueil')}}">
     <div class="d-flex align-items-center">
     <img src="{{url_for('static', filename='images/logo_app.png')}}" alt="logo" width="50" height="50" class="d-inline-block align-text-top">
     <span class="ms-2">NutritionApp</span>
@@ -19,16 +19,16 @@
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
       <li class="nav-item {% if page == 'accueil' %}active{% endif %}">
-      <a href="{{url_for('accueil')}}" class="nav-link">Accueil</a>
+      <a href="{{url_for('controllers.accueil')}}" class="nav-link">Accueil</a>
       </li>
       <li class="nav-item {% if page == 'dietes' %}active{% endif %}">
-        <a href="{{url_for('dietes')}}" class="nav-link">Diètes</a>
+        <a href="{{url_for('controllers.dietes')}}" class="nav-link">Diètes</a>
       </li>
       <li class="nav-item {% if page == 'aliments' %}active{% endif %}">
-        <a href="{{url_for('aliments')}}" class="nav-link">Aliments</a>
+        <a href="{{url_for('controllers.aliments')}}" class="nav-link">Aliments</a>
       </li>
       <li class="nav-item {% if page == 'reglages' %}active{% endif %}">
-        <a href="{{url_for('reglages')}}" class="nav-link">Réglages</a>
+        <a href="{{url_for('controllers.reglages')}}" class="nav-link">Réglages</a>
       </li>
     </ul>
   </div>
@@ -51,6 +51,7 @@
         {% if loop.last %}
           <li class="breadcrumb-item active" aria-current="page">{{pretty_name[item]}}</li>
         {% else %}
+          {% set item = "controllers." + item %}
           <li class="breadcrumb-item"><a href="{{url_for(item)}}">{{pretty_name[item]}}</a></li>
         {% endif %}
       {% endfor %}

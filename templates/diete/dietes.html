@@ -12,7 +12,7 @@
 <div class="content">
     <h1 class="title">{% block title %} Diètes {% endblock %}</h1>
     <div class="create_diet">
-        <form action="{{ url_for('ajouter_diete') }}" method="POST" class="form-inline justify-content-center">
+        <form action="{{ url_for('controllers.ajouter_diete') }}" method="POST" class="form-inline justify-content-center">
             <input type="text" id="titre" name="titre" class="form-control" placeholder="Créer une diète" required>
             <button type="submit" class="btn btn-primary">Valider</button>
         </form>
@@ -33,10 +33,10 @@
 
                 <td>
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <a href="{{ url_for('voir_diete', id=diete.id) }}" class="btn btn-secondary">Voir</a>
-                        <a href="{{ url_for('modifier_diete', id=diete.id) }}" class="btn btn-secondary">Modifier</a>
-                        <a href="{{ url_for('supprimer_diete', id=diete.id) }}" class="btn btn-secondary">Supprimer</a>
-                        <a href="{{ url_for('print_diete_pdf',id_diete=diete.id) }}" class="btn btn-secondary">PDF</a>
+                        <a href="{{ url_for('controllers.voir_diete', id=diete.id) }}" class="btn btn-secondary">Voir</a>
+                        <a href="{{ url_for('controllers.modifier_diete', id=diete.id) }}" class="btn btn-secondary">Modifier</a>
+                        <a href="{{ url_for('controllers.supprimer_diete', id=diete.id) }}" class="btn btn-secondary">Supprimer</a>
+                        <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-secondary">PDF</a>
                     </div>
                 </td>
             </tr>
@@ -46,7 +46,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-3">
-                <form method="post" action="{{ url_for('importer_csv') }}" enctype="multipart/form-data">
+                <form method="post" action="{{ url_for('controllers.importer_csv') }}" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">

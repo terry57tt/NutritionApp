@@ -13,7 +13,7 @@
 <h1 class="title">{% block title %} Aliments {% endblock %}</h1>
 <div class="content_aliments bg-light">
     <div>
-        <form method="POST" action="{{ url_for('modifier_aliment_post', id=aliment.id) }}"  enctype="multipart/form-data">
+        <form method="POST" action="{{ url_for('controllers.modifier_aliment_post', id=aliment.id) }}"  enctype="multipart/form-data">
             <div class="form-row">
                 <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">
@@ -116,7 +116,7 @@
             </div>
             <div class="form-row text-center" style="padding-bottom: 0.5cm;">
                 <div class="col-md-12">
-                    <a href="{{ url_for('aliments') }}" class="btn btn-secondary">Annuler</a>
+                    <a href="{{ url_for('controllers.aliments') }}" class="btn btn-secondary">Annuler</a>
                     <input type="submit" value="Modifier" class="btn btn-primary">
                 </div>
             </div>

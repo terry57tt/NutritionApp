@@ -1,1 +1,35 @@
-env/
+# Python
+__pycache__/
+*.pyc
+
+# Database
+database.db
+
+# Virtual Environment
+venv/
+
+# Compiled Python files
+*.pyc
+
+# Compiled Python files created by Python 3.6
+*.pyc[co]
+
+# Compiled Python files created by Python 3.7
+__pycache__/
+
+# Editor-specific temporary files
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Compiled binary files
+*.exe
+*.dll
+*.so
+*.pyd
+
+# Cache files
+*.cache/
+*.pyc
