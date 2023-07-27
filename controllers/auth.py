@@ -2,7 +2,10 @@ from flask import render_template, request, redirect, url_for, flash, Response
 from models.Utilisateur import Utilisateur
 from setup_sql import db
 
+
 from controllers import app
+from flask import Blueprint
+auth = Blueprint('auth', __name__)
 
 @app.route('/login')
 def login():

@@ -51,8 +51,8 @@
         {% if loop.last %}
           <li class="breadcrumb-item active" aria-current="page">{{pretty_name[item]}}</li>
         {% else %}
-          {% set item = "controllers." + item %}
-          <li class="breadcrumb-item"><a href="{{url_for(item)}}">{{pretty_name[item]}}</a></li>
+          {% set var = "controllers." + item %}
+          <li class="breadcrumb-item"><a href="{{url_for(var)}}">{{pretty_name[item]}}</a></li>
         {% endif %}
       {% endfor %}
     {% endif %}

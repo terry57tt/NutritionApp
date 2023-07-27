@@ -1,5 +1,7 @@
 from setup_sql import db
 
+MAX_RESULTS = 100
+
 class Aliment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titre = db.Column(db.String(255), nullable=True, unique=True)
@@ -17,7 +19,25 @@ class Aliment(db.Model):
         return Aliment.query.get(id)
 
     def get_all():
-        return Aliment.query.order_by(Aliment.titre).all()
+        return Aliment.query.order_by(Aliment.titre).limit(MAX_RESULTS).all()
     
     def delete(self):
         db.session.delete(self)
+
+    def jsonformat(self):
+        return {
+            'id': self.id,
+            'titre': self.titre,
+            'kcal': self.kcal,
+            'proteines': self.proteines,
+            'glucides': self.glucides,
+            'lipides': self.lipides,
+            'categorie': self.categorie,
+            'photo': self.photo,
+            'description': self.description,
+            'unite': self.unite,
+            'valide': self.valide
+        }
+    
+    def search_by_titre(filter_value):
+        return Aliment.query.filter(Aliment.titre.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()

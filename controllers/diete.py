@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, Response
+from flask import render_template, request, redirect, url_for, flash, Response, jsonify
 from models.Utilisateur import Utilisateur
 from models.Diete import Diete
 from models.Aliment import Aliment
@@ -10,6 +10,30 @@ from urllib.parse import urlparse
 import pandas as pd
 
 from controllers import app
+
+@app.route('/get_filtered_data', methods=['POST'])
+def get_filtered_data():
+    filter_value = request.form.get('filter', '').lower()
+    page_number = int(request.form.get('page', 1))
+    page_size = int(request.form.get('page_size', 5))
+
+    filtered_data = []    
+    aliments = Aliment.search_by_titre(filter_value)
+
+    for aliment in aliments:
+        filtered_data.append(aliment.jsonformat())
+
+    # Calculer le nombre total de pages
+    total_pages = (len(filtered_data) + page_size - 1) // page_size
+
+    # Récupérer les éléments de la page actuelle
+    start_idx = (page_number - 1) * page_size
+    end_idx = start_idx + page_size
+    current_page_data = filtered_data[start_idx:end_idx]
+
+    # Renvoyer les données filtrées et le nombre total de pages sous forme de réponse JSON
+    return jsonify(data=current_page_data, total_pages=total_pages)
+
 
 @app.route('/dietes')
 def dietes():

@@ -73,6 +73,11 @@
 {% if diete != None %}
 
   {% set total_macros = diete.total_proteines()*4 + diete.total_lipides()*9 + diete.total_glucides()*4 %}
+
+  {% if total_macros == 0 %}
+    {% set total_macros = 1 %}
+  {% endif %}
+  
   {% set pourcentage_proteines = (diete.total_proteines()*4 / total_macros * 100)|round|int %}
   {% set pourcentage_lipides = (diete.total_lipides()*9 / total_macros * 100)|round|int %}
   {% set pourcentage_glucides = (diete.total_glucides()*4 / total_macros * 100)|round|int %}

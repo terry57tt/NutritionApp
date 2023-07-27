@@ -57,3 +57,78 @@ function changeTitle(id) {
     }
   });
 }
+
+var delayTimer; // Timer pour retarder l'envoi de la requête AJAX
+
+var currentPage = 1;
+var pageSize = 5; // Nombre d'éléments par page
+
+function updateData() {
+  var filterValue = $('#filterInput').val();
+
+  $.ajax({
+      url: '/get_filtered_data',
+      type: 'POST',
+      data: { filter: filterValue, page: currentPage, page_size: pageSize },
+      success: function(response) {
+          var dataContainer = $('#dataContainer');
+          dataContainer.empty();
+
+          // Afficher les éléments de la page actuelle
+          response.data.forEach(function(item) {
+              dataContainer.append('<p>' + item.titre + '</p>');
+          });
+
+          // Mise à jour de la pagination
+          updatePagination(response.total_pages);
+      },
+      error: function() {
+          alert('Erreur lors du chargement des données filtrées.');
+      }
+  });
+}
+
+function updatePagination(totalPages) {
+  var pagination = $('#pagination');
+  pagination.empty();
+
+  // Créer le lien pour la page précédente
+  pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + (currentPage - 1) + ')" id="prevPageLink">&laquo;</a></li>');
+
+  // Créer les liens pour chaque page
+  for (var i = 1; i <= totalPages; i++) {
+      pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + i + ')">' + i + '</a></li>');
+  }
+
+  // Créer le lien pour la page suivante
+  pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + (currentPage + 1) + ')" id="nextPageLink">&raquo;</a></li>');
+
+  // Désactiver le lien de la page précédente si on est à la première page
+  if (currentPage === 1) {
+      $('#prevPageLink').addClass('disabled');
+  } else {
+      $('#prevPageLink').removeClass('disabled');
+  }
+
+  // Désactiver le lien de la page suivante si on est à la dernière page
+  if (currentPage === totalPages) {
+      $('#nextPageLink').addClass('disabled');
+  } else {
+      $('#nextPageLink').removeClass('disabled');
+  }
+}
+
+function goToPage(pageNumber) {
+  currentPage = pageNumber;
+  updateData();
+}
+
+$(document).ready(function() {
+  $('#filterInput').on('keyup', function() {
+      clearTimeout(delayTimer);
+      delayTimer = setTimeout(updateData, 500);
+  });
+
+  // Charger les données initiales (page 1)
+  updateData();
+});      
