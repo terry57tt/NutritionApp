@@ -41,3 +41,12 @@ class Aliment(db.Model):
     
     def search_by_titre(filter_value):
         return Aliment.query.filter(Aliment.titre.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()
+    
+    def search_by_categorie(filter_value):
+        return Aliment.query.filter(Aliment.categorie.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()
+    
+    def search_by_titre_and_categorie(titre_filter, categorie_filter):
+        return Aliment.query.filter(
+            Aliment.titre.like('%' + titre_filter + '%'),
+            Aliment.categorie.like('%' + categorie_filter + '%')
+        ).limit(MAX_RESULTS).all()

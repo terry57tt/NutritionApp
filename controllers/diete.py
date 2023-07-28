@@ -14,11 +14,14 @@ from controllers import app
 @app.route('/get_filtered_data', methods=['POST'])
 def get_filtered_data():
     filter_value = request.form.get('filter', '').lower()
+    selected_categorie = request.form.get('selected_category', '')
     page_number = int(request.form.get('page', 1))
     page_size = int(request.form.get('page_size', 5))
 
     filtered_data = []    
-    aliments = Aliment.search_by_titre(filter_value)
+    # search_by_titre_and_categorie
+    
+    aliments = Aliment.search_by_titre_and_categorie(filter_value, selected_categorie)
 
     for aliment in aliments:
         filtered_data.append(aliment.jsonformat())
@@ -119,6 +122,7 @@ def creer_diete(id):
  
 @app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:label>', methods=['GET', 'POST'])
 def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
+    
     nouvelle_portion = Portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion=label)
     
     db.session.add(nouvelle_portion)
