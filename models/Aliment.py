@@ -1,6 +1,4 @@
-from setup_sql import db
-
-MAX_RESULTS = 100
+from setup_sql import db, MAX_RESULTS
 
 class Aliment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

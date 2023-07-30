@@ -28,3 +28,15 @@ class Utilisateur(db.Model):
     
     def mail_partie2(self):
         return self.mail.split('@')[1]
+    
+    def jsonformat(self):
+        return {
+            'id': self.id,
+            'nom': self.nom,
+            'prenom': self.prenom,
+            'mail': self.mail,
+            'age': self.age,
+            'taille': self.taille,
+            'poids': self.poids,
+            'sexe': self.sexe,
+        }

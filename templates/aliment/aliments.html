@@ -8,117 +8,137 @@
 {% endwith %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
-<div class="content">
 <h1 class="title">{% block title %} Aliments {% endblock %}</h1>
-<div class="content_aliments bg-light">
-    <div>
-        <form method="POST" action="{{ url_for('controllers.ajouter_aliment') }}"  enctype="multipart/form-data">
-            <div class="form-row">
-                <div class="input-group mb-3 col-md-6">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="titre">Titre</span>
-                    </div>
-                    <input type="text" id="titre" name="titre" class="form-control" placeholder="Titre" required>
-                </div>
-                <div class="input-group mb-3 col-md-6">
-                    <input type="number" id="kcal" name="kcal" class="form-control" placeholder="Kcal" required>
-                    <div class="input-group-append">
-                        <span class="input-group-text" id="kcal">Kcal</span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="input-group mb-3 col-md-4">
-                    <input type="number" id="proteines" name="proteines" class="form-control" placeholder="Protéines" required>
-                    <div class="input-group-append">
-                        <span class="input-group-text" id="proteines">Protéines</span>
-                    </div>
-                </div>
-                <div class="input-group mb-3 col-md-4">
-                    <input type="number" id="glucides" name="glucides" class="form-control" placeholder="Glucides" required>
-                    <div class="input-group-append">
-                        <span class="input-group-text" id="glucides">Glucides</span>
-                    </div>
-                </div>
-                <div class="input-group mb-3 col-md-4">
-                    <input type="number" id="lipides" name="lipides" class="form-control" placeholder="Lipides" required>
-                    <div class="input-group-append">
-                        <span class="input-group-text" id="lipides">Lipides</span>
-                    </div>
-                </div>  
-            </div>
-            <div class="form-row">
-                <div class="input-group mb-3 col-md-6">
-                    <select id="categorie" name="categorie" class="form-control" required>
-                        <option value="légume">Légume</option>
-                        <option value="boisson">Boisson</option>
-                        <option value="féculent">Féculent</option>
-                        <option value="fruit">Fruit</option>
-                        <option value="légumineuse">Légumineuse</option>
-                        <option value="matière grasse">Matière grasse</option>
-                        <option value="produit laitier">Produit laitier</option>
-                        <option value="poisson">Poisson</option>
-                        <option value="viande">Viande</option>
-                        <option value="sucrerie">Sucrerie</option>
-                        <option value="autre">Autre</option>
-                    </select>    
-                </div>
-                <div class="input-group mb-3 col-md-6">
-                    <input class="form-control" type="file" id="fichier_photo" name="fichier_photo">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="input-group mb-3 col-md-9">
-                    <span class="input-group-text">Description</span>
-                    <textarea class="form-control" id="description" name="description" aria-label="With textarea"></textarea>
-                </div>
 
-                <div class="input-group mb-3 col-md-2">
-                    <div class="form-check">
-                        <input class="form-check-input" value="0" type="radio" name="unite" id="flexRadioDefault1" value="100 g" required>
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            100 g
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" value="1" type="radio" name="unite" id="flexRadioDefault2" value="1 portion" required>
-                        <label class="form-check-label" for="flexRadioDefault2">
-                            1 portion
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" value="2" type="radio" name="unite" id="flexRadioDefault3" value="100 mL" required  >
-                        <label class="form-check-label" for="flexRadioDefault3">
-                            100 mL
-                        </label>
-                    </div>
+<div class="edit_window bg-light">
+    <form method="POST" action="{{ url_for('controllers.ajouter_aliment') }}" enctype="multipart/form-data">
+                <div class="container">
+                        <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group">
+                            <span class="input-group-text">Titre</span>
+                            <input id="titre" name="titre" class="form-control" type="text" required/>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group">
+                            <input id="kcal" name="kcal" class="form-control" type="number" required/>
+                            <span class="input-group-text">Kcal</span>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                            <span class="input-group-text">Protéines</span>
+                            <input id="proteines" name="proteines" class="form-control" type="number" required/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                            <span class="input-group-text">Glucides</span>
+                            <input id="glucides" name="glucides" class="form-control" type="number" required/>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="input-group">
+                            <span class="input-group-text">Lipides</span>
+                            <input id="lipides" name="lipides" class="form-control" type="number" required/>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <select id="categorie" name="categorie" class="form-control" required>
+                                <option value="autre">Autre</option>
+                                <option value="boisson">Boisson</option>
+                                <option value="féculent">Féculent</option>
+                                <option value="fruit">Fruit</option>
+                                <option value="légume">Légume</option>
+                                <option value="légumineuse">Légumineuse</option>
+                                <option value="matière grasse">Matière grasse</option>
+                                <option value="produit laitier">Produit laitier</option>
+                                <option value="poisson">Poisson</option>
+                                <option value="viande">Viande</option>
+                                <option value="sucrerie">Sucrerie</option>                 
+                            </select>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <div class="input-group">
+                                <input class="form-control" type="file" id="fichier_photo" name="fichier_photo">
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-md-9 mb-3">
+                            <div class="input-group description">
+                            <span class="input-group-text">Description</span>
+                            <textarea id="description" name="description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" value="0" type="radio" name="unite" id="flexRadioDefault1" value="100 g" required>
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                100 g
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" value="1" type="radio" name="unite" id="flexRadioDefault2" value="1 portion" required>
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                1 portion
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" value="2" type="radio" name="unite" id="flexRadioDefault3" value="100 mL" required>
+                                <label class="form-check-label" for="flexRadioDefault3">
+                                100 mL
+                                </label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit">Ajouter</button>
+                            </div>
+                        </div>
+                </div>
+        </form>          
+</div>
+
+<div class="edit_window bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-10 mb-3">
+                <form method="post" action="{{ url_for('controllers.importer_csv_aliment') }}" enctype="multipart/form-data">
+                    <input class="form-control" type="file" id="fichier_aliment" name="fichier_aliment" onchange="checkFileSelectedAliment()">
+            </div>
+            <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary" id="bouton_importer_aliment" disabled>Importer</button>
+                </form>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <a href="{{ url_for('controllers.export_csv_aliment') }}" class="btn btn-primary">Exporter</a>
                 </div>
             </div>
-            <div class="form-row text-center" style="padding-bottom: 0.5cm;">
-                <div class="col-md-12">
-                    <input type="submit" value="Ajouter" class="btn btn-primary">
-                </div>
-            </div>
-        </form>               
+        </div>        
     </div>
 </div>
 
-<div class="content_aliments_table bg-light text-center">
-    <form method="post" action="{{ url_for('controllers.importer_csv_aliment') }}" enctype="multipart/form-data">
-        <input class="form-control" type="file" id="fichier_aliment" name="fichier_aliment" onchange="checkFileSelectedAliment()">
-        <button type="submit" class="btn btn-primary" id="bouton_importer_aliment" style="margin: 5px" disabled>Importer</button>
-    </form>
-    <a href="{{ url_for('controllers.export_csv_aliment') }}" class="btn btn-primary">Exporter</a>
-</div>
-<div class="content_aliments bg-light">
-    <form id="search-form" class="form-inline" style="padding-bottom: 0.5cm;">
+<div class="table_window bg-light">
+    <form id="search-form" class="form-inline mb-3">
         <input id="filterInput" type="text" name="search" class="form-control" placeholder="Rechercher un aliment" aria-label="Rechercher un aliment">
         <select id="filterSelect" name="filterSelect" class="form-control" required></select>   
     </form>
     
-    <table class="table table-striped table-bordered">      
-        <tr class="element_aliment" id="dataContainer"></tr>
+    <table class="table table-striped table-bordered" id="table_aliment">      
+        <tbody id="dataContainer"></tbody>
     </table>
     
     <nav aria-label="Page navigation example">

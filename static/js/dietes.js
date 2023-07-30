@@ -76,9 +76,15 @@ function updateData() {
         var dataContainer = $('#dataContainer');
         dataContainer.empty();
 
+        if(response.data.length === 0) {
+          dataContainer.append('<tr><td colspan="4" class="text-center">Aucun aliment trouvé.</td></tr>');
+          updatePagination(1);
+          return;
+        }
+
         // Afficher les éléments de la page actuelle
         response.data.forEach(function(item) {
-          dataContainer.append('<tr class="element_aliment"><td style="width: 40%;">' + item.titre + '</td><td style="width: 30%;">' + item.kcal + ' kcal</td><td style="width: 30%;">' + item.proteines + ' g/p</td><td><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal' + item.id + '">+</button>' + fenetre_modale(item) + '</td></tr>');
+          dataContainer.append('<tr class="element_aliment"><td style="width: 40%;">' + item.titre + '</td><td style="width: 30%;">' + item.kcal + ' kcal</td><td style="width: 30%;">' + item.proteines + ' g/p</td><td><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal' + item.id + '"><i class="fa fa-plus"></i></button>' + fenetre_modale(item) + '</td></tr>');
         });
 
         // Mise à jour de la pagination
@@ -141,26 +147,24 @@ $(document).ready(function() {
 });
 
 function fenetre_modale(item){
-  const modal =
-          `<div class="modal fade" id="modal`+ item.id +`" tabindex="-1" aria-labelledby="modal`+ item.id +`Label" aria-hidden="true">
+  return `<div class="modal fade" id="modal${item.id}" tabindex="-1" aria-labelledby="modal${item.id}Label" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="modal`+ item.id +`Label">Ajouter la quantité</h5>
+                  <h5 class="modal-title" id="modal${item.id}Label">Ajouter la quantité</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <label for="quantite`+ item.id +`">Quantité</label>
                   <div class="input-group">
-                    <input type="number" id="quantite`+ item.id +`" class="form-control" min="1" required placeholder="Quantité">
+                    <input type="number" id="quantite${item.id}" class="form-control" min="1" required placeholder="Quantité">
                     
                     <div class="input-group-prepend">
                       <div class="input-group-text" id="btnGroupAddon2">`+ unite_to_string(item.unite) + item.titre +`</div>
                     </div>
 
                   </div>
-                  <label for="repas`+ item.id +`">Repas</label>
-                  <select id="repas`+ item.id +`" class="form-control" required>
+                  <label for="repas${item.id}"></label>
+                  <select id="repas${item.id}" class="form-control" required>
                     <option value="1">Matin</option>
                     <option value="2">Collation Matin</option>
                     <option value="3">Midi</option>
@@ -171,12 +175,11 @@ function fenetre_modale(item){
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                  <button type="button" class="btn btn-primary" onclick="ajouterQuantite(`+ item.id +`, `+ dieteId +`)">Ajouter</button>
+                  <button type="button" class="btn btn-primary" onclick="ajouterQuantite(${item.id}, ${dieteId})">Ajouter</button>
                 </div>
               </div>
             </div>
           </div>`;
-  return modal;
 }
 
 function unite_to_string(unite){

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set page = 'aliments' %}
+
+{% set place = ["accueil","aliments","modifier_aliment"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+
+<div class="edit_window bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <div class="input-group">
+            <span class="input-group-text">Titre</span>
+            <input class="form-control" type="text" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="input-group">
+            <input class="form-control" type="text" />
+            <span class="input-group-text">Kcal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="input-group mb-3">
+            <span class="input-group-text">Protéines</span>
+            <input class="form-control" type="text" />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group mb-3">
+            <span class="input-group-text">Glucides</span>
+            <input class="form-control" type="text" />
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="input-group">
+            <span class="input-group-text">Lipides</span>
+            <input class="form-control" type="text" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+            <select id="filterSelect" name="filterSelect" class="form-control" required></select>
+        </div>
+        <div class="col-md-8 mb-3">
+            <div class="input-group">
+                <input class="form-control" type="file" id="fichier_photo" name="fichier_photo">
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-9 mb-3">
+          <div class="input-group description">
+            <span class="input-group-text">Description</span>
+            <textarea class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-check">
+                <input class="form-check-input" value="0" type="radio" name="unite" id="flexRadioDefault1" value="100 g" checked required>
+                <label class="form-check-label" for="flexRadioDefault1">
+                    100 g
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" value="1" type="radio" name="unite" id="flexRadioDefault2" value="1 portion" required>
+                <label class="form-check-label" for="flexRadioDefault2">
+                    1 portion
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" value="2" type="radio" name="unite" id="flexRadioDefault3" value="100 mL" required>
+                <label class="form-check-label" for="flexRadioDefault3">
+                    100 mL
+                </label>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="container">
+          <div class="row">
+            <div class="text-center">
+              <button class="btn btn-secondary" type="button">Annuler</button>
+              <button class="btn btn-primary" type="button">Modifier</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+</div>
+{% endblock %}

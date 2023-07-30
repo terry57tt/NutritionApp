@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set page = 'detail' %}
+
+{% set place = ["accueil","dietes","detail"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+<h1 class="title">{% block title %} Détail {% endblock %}</h1> 
+
+{% with diete=diete %}
+    {% include 'diete/liste_aliments_diete.html' %}
+{% endwith %}
+
+{% endblock %}

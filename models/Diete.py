@@ -1,4 +1,4 @@
-from setup_sql import db
+from setup_sql import db, MAX_RESULTS
 from models.Portion import Portion
 from models.Aliment import Aliment
 
@@ -30,3 +30,15 @@ class Diete(db.Model):
     
     def total_lipides(self):
         return sum([portion.lipides_portion() for portion in self.portions_associees()])
+    
+    def search_by_titre(filter_value):
+        return Diete.query.filter(Diete.titre_diete.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()
+    
+    def jsonformat(self):
+        createur = self.createur_obj.jsonformat() if self.createur_obj else None
+        return {
+            'id': self.id,
+            'titre_diete': self.titre_diete,
+            'createur': createur,
+            'date': self.date,
+        }

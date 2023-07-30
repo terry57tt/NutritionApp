@@ -82,20 +82,22 @@
   {% set pourcentage_lipides = (diete.total_lipides()*9 / total_macros * 100)|round|int %}
   {% set pourcentage_glucides = (diete.total_glucides()*4 / total_macros * 100)|round|int %}
 
-  {% include 'diete/display_diete.html' %}
+  {% with diete=diete %}
+    {% include 'diete/liste_aliments_diete.html' %}
+  {% endwith %}
 
   <div class="btn_changer_imprimer">
     <div class="d-flex justify-content-center">
       <div class="section text-center">
         <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
-        <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary">Imprimer diète</a>
-        <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary">CSV</a>
+        <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-pdf-o"></i></a>
+        <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i></a>
       </div>
     </div>
   </div>
 {% else %}
 
-  <h1 class="text-center" style="padding-bottom: 1cm;">Vous n'avez pas encore de diète</h1>
+  <h1 class="text-center">Vous n'avez pas encore de diète</h1>
   <div class="btn_changer_imprimer">
     <div class="d-flex justify-content-center">
       <div class="section text-center">

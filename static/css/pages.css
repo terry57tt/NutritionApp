@@ -28,10 +28,6 @@
     text-align: center;
 }
 
-.btn_changer_imprimer{
-    padding-bottom: 2cm;
-}
-
 .green_dot {
     height: 25px;
     width: 25px;
@@ -46,4 +42,88 @@
         background-color: red;
         border-radius: 50%;
         display: inline-block;
+}
+
+.edit_window{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 30px;
+    max-width: 800px;
+    border-radius: 10px;
+}
+
+.imc_window{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 30px;
+    max-width: 1200px;
+    border-radius: 10px;
+
+}
+
+.diete_window{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 30px;
+    max-width: 1200px;
+    border-radius: 10px;
+}
+
+.table_window{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 30px;
+    max-width: 1200px;
+    min-width: 100px;
+    border-radius: 10px;
+}
+
+.debug{
+    background-color: red;
+}
+
+.description{
+    height: 75px;
+}
+
+.input-radio{
+    padding-right: 0;
+}
+
+.colonne_table_30{
+    width: 30%;
+}
+
+.colonne_table_20{
+    width: 20%;
+}
+
+.colonne_table_10{
+    width: 10%;
+}
+
+.flash_messages{
+    width: 90%;
+    margin: 10px auto; /* center element */
+    max-width: 800px;
+}
+
+@media screen and (max-width: 1200px) {
+    .third {
+      display: none;
+    }
+  
+    .table_window{
+        font-size: 0.8em;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .secondary {
+      display: none;
+    }
+  
+    .table_window{
+        font-size: 0.8em;
+    }
 }

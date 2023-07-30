@@ -11,6 +11,31 @@ import pandas as pd
 
 from controllers import app
 
+@app.route('/t', methods=['GET', 'POST'])
+def t():
+    return render_template('aliment/test.html')
+
+@app.route('/get_filtered_data_dietes', methods=['POST'])
+def get_filtered_data_dietes():
+    filter_value = request.form.get('filter', '').lower()
+    page_number = int(request.form.get('page', 1))
+    page_size = int(request.form.get('page_size', 5))
+
+    filtered_data = []
+
+    dietes = Diete.search_by_titre(filter_value)
+    
+    for diete in dietes:
+        filtered_data.append(diete.jsonformat())
+
+    total_pages = (len(filtered_data) + page_size - 1) // page_size
+
+    start_idx = (page_number - 1) * page_size
+    end_idx = start_idx + page_size
+    current_page_data = filtered_data[start_idx:end_idx]
+
+    return jsonify(data=current_page_data, total_pages=total_pages)
+
 @app.route('/get_filtered_data', methods=['POST'])
 def get_filtered_data():
     filter_value = request.form.get('filter', '').lower()
@@ -19,7 +44,6 @@ def get_filtered_data():
     page_size = int(request.form.get('page_size', 5))
 
     filtered_data = []    
-    # search_by_titre_and_categorie
     
     aliments = Aliment.search_by_titre_and_categorie(filter_value, selected_categorie)
 
@@ -72,7 +96,7 @@ def supprimer_diete(id):
 @app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
 def voir_diete(id):
     diet = Diete.get_by_id(id)
-    return render_template('diete/display_diete.html', root = default_root(), diete=diet)
+    return render_template('diete/detail_diete.html', root = default_root(), diete=diet)
 
 @app.route('/change_title/<int:id>/<string:title>', methods=['GET', 'POST'])
 def change_title(id, title):
