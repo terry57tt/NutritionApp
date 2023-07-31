@@ -1,5 +1,5 @@
 # Python
-__pycache__/
+*/__pycache__/
 *.pyc
 
 # Database
@@ -13,9 +13,6 @@ venv/
 
 # Compiled Python files created by Python 3.6
 *.pyc[co]
-
-# Compiled Python files created by Python 3.7
-__pycache__/
 
 # Editor-specific temporary files
 .vscode/

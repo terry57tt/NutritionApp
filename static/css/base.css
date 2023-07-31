@@ -6,6 +6,11 @@ html{
     background-color: #fff;
 }
 
+.fil_ariane{
+  margin-left: 2cm;
+  margin-right: 2cm;
+}
+
 .chart-heading {
     font-family: "Rubik", sans-serif;
     color: #023047;

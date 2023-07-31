@@ -8,7 +8,7 @@
 {% endwith %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
-<h1 class="title">{% block title %} Aliments {% endblock %}</h1>
+<title>{% block title %} Aliments {% endblock %}</title>
 
 <div class="edit_window bg-light">
     <form method="POST" action="{{ url_for('controllers.ajouter_aliment') }}" enctype="multipart/form-data">

@@ -127,3 +127,77 @@
         font-size: 0.8em;
     }
 }
+
+.dashboard-wrapper{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 20px;
+    max-width: 1200px;
+    border-radius: 10px;
+}
+
+.card-title{
+    font-weight: 700;
+    font-size: 18px;
+    color: #474d58;
+}
+
+.card-2-2{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-gap: 25px;
+}
+
+.card-sub-element {
+    border-radius: 15px;
+    height: 135px;
+    padding: 20px;
+}
+
+.color-yellow{
+    background: #fff4de;
+    color: #ffad44;
+}
+
+.color-blue{
+    background: #e8f4ff;
+    color: #3699ff;
+}
+
+
+.color-green{
+    background: #e8fff4;
+    color: #25c997;
+}
+
+.color-red{
+    background: #ffe8e8;
+    color: #f64e60;
+}
+
+.content_hidden{
+    display: none;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/Mulish-Black.ttf');
+    font-weight: 900;
+}
+
+.widget_numbers{
+    font-family: 'Mulish';
+    font-weight: 900;
+    font-weight: normal;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.info-little{
+    font-size: 0.8em;
+    font-weight: 400;
+}

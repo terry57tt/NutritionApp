@@ -10,99 +10,215 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
-<div class="edit_window bg-light">
+<div class="dashboard-wrapper">
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <div class="input-group">
-            <span class="input-group-text">Titre</span>
-            <input class="form-control" type="text" />
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <div class="input-group">
-            <input class="form-control" type="text" />
-            <span class="input-group-text">Kcal</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="input-group mb-3">
-            <span class="input-group-text">Protéines</span>
-            <input class="form-control" type="text" />
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="input-group mb-3">
-            <span class="input-group-text">Glucides</span>
-            <input class="form-control" type="text" />
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="input-group">
-            <span class="input-group-text">Lipides</span>
-            <input class="form-control" type="text" />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-            <select id="filterSelect" name="filterSelect" class="form-control" required></select>
-        </div>
-        <div class="col-md-8 mb-3">
-            <div class="input-group">
-                <input class="form-control" type="file" id="fichier_photo" name="fichier_photo">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">Macronutriments</h4>
+                        <h6 class="text-muted card-subtitle mb-2"></h6>
+                        <div class="card_container">
+                            <div class="card_container">
+                                <div class="card_container">
+                                    <canvas id="macro_chart" height="300"></canvas>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-body card-2-2">
+                    <div class="card-sub-element widget_numbers color-yellow">
+                        <h3> 20 ans </h3>
+                        <span class="info-little"> Terry Tempestini </span>
+                    </div>
+                    <div class="card-sub-element widget_numbers color-blue">
+                        <h3> 170 cm </h3>
+                        <span class="info-little"> Homme </span>
+                    </div> 
+                    <div class="card-sub-element widget_numbers color-red">
+                        <h3> 68 kg </h3>
+                        <span class="info-little"> IMC = 28.5 </span>
+                    </div> 
+                    <div class="card-sub-element widget_numbers color-green">
+                        <h3> Actif </h3>
+                        <span class="info-little"> Musculation </span>
+                    </div> 
+                </div>
+            </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">Poids</h4>
+                    <h6 class="text-muted card-subtitle mb-2"></h6>
+
+                    <div class="card_container">
+                        <canvas id="evolution_chart" width="300" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
-      </div>
     </div>
+
     <div class="container">
-      <div class="row">
-        <div class="col-md-9 mb-3">
-          <div class="input-group description">
-            <span class="input-group-text">Description</span>
-            <textarea class="form-control"></textarea>
-          </div>
+        <div class="row">
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Repas</h4>
+                    <h6 class="text-muted card-subtitle mb-2"></h6>
+                    
+                    <div class="card_container content_hidden">
+                        <canvas id="objectifs_chart" width="400" height="435"></canvas>
+                    </div>
+
+                </div>
+            </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title"></h4>
+                    <h6 class="text-muted card-subtitle mb-2"></h6>
+                        {% with diete=diete %}
+                            {% include 'diete/liste_aliments_diete_test.html' %}
+                        {% endwith %}
+                </div>
+            </div>
+            </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="form-check">
-                <input class="form-check-input" value="0" type="radio" name="unite" id="flexRadioDefault1" value="100 g" checked required>
-                <label class="form-check-label" for="flexRadioDefault1">
-                    100 g
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" value="1" type="radio" name="unite" id="flexRadioDefault2" value="1 portion" required>
-                <label class="form-check-label" for="flexRadioDefault2">
-                    1 portion
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" value="2" type="radio" name="unite" id="flexRadioDefault3" value="100 mL" required>
-                <label class="form-check-label" for="flexRadioDefault3">
-                    100 mL
-                </label>
-            </div>
-        </div>
-      </div>
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="container">
-          <div class="row">
-            <div class="text-center">
-              <button class="btn btn-secondary" type="button">Annuler</button>
-              <button class="btn btn-primary" type="button">Modifier</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 </div>
+
+<script>
+        const data = {
+          labels: ['Protéines', 'Lipides', 'Glucides'],
+          datasets: [{
+            label: 'Macronutriments',
+            data: [25,30,45],
+            backgroundColor: [
+                '#fff4de',
+                '#e8f4ff',
+                '#ffe8e8',
+              ],
+            hoverOffset: 20,
+            borderWidth: 5,
+            borderRadius: 10,
+            bordereAlign: 'inner',
+            
+          }]
+        };
+    
+        // Configuration du graphique
+        const config = {
+          type: 'doughnut',
+          data: data,
+            options: {
+                plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                }
+            },
+        };
+    
+        const circle_chart = new Chart(document.getElementById('macro_chart'), config);
+
+        const data_radar = {
+            labels: [
+                'Matin',
+                'Collation matin',
+                'Midi',
+                'Collation après-midi',
+                'Soir',
+                'Collation soir'
+            ],
+            datasets: [{
+              label: 'Expected',
+              data: [65, 59, 90, 81, 56, 55],
+              fill: true,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgb(255, 99, 132)',
+              pointBackgroundColor: 'rgb(255, 99, 132)',
+            }, {
+              label: 'Realised',
+              data: [28, 48, 40, 19, 96, 100],
+              fill: true,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgb(54, 162, 235)',
+              pointBackgroundColor: 'rgb(54, 162, 235)',
+            }]
+          };
+      
+          const config_radar = {
+            type: 'radar',
+            data: data_radar,
+            options: {
+              elements: {
+                line: {
+                  borderWidth: 3
+                }
+              },
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                },
+              }
+            },
+          };
+      
+          // Création du graphique Radar
+          const radar_chart = new Chart(document.getElementById('objectifs_chart'), config_radar);      
+                
+          const data_histo = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Objectifs',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const config_histo = {
+        type: 'bar',
+        data: data_histo,
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true
+            }
+            }
+        }
+        };
+
+        // Création du graphique Histogramme
+        const histo_chart = new Chart(document.getElementById('evolution_chart'), config_histo);
+
+</script>
+
+
+
 {% endblock %}

@@ -9,7 +9,7 @@
 {% endwith %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
-<h1 class="title">{% block title %} Détail {% endblock %}</h1> 
+<title>{% block title %} Détail {% endblock %}</title>
 
 {% with diete=diete %}
     {% include 'diete/liste_aliments_diete.html' %}

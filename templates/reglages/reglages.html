@@ -9,7 +9,8 @@
 {% endwith %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
-<h1 class="title">{% block title %} Réglages {% endblock %}</h1>
+<title>{% block title %} Réglages {% endblock %}</title>
+
 
 <div class="edit_window bg-light">
     <form method="POST" action="{{ url_for('controllers.modifier_utilisateur', id=utilisateur.id) }}" id="modifierForm"  enctype="multipart/form-data">

@@ -13,7 +13,8 @@ from controllers import app
 
 @app.route('/t', methods=['GET', 'POST'])
 def t():
-    return render_template('aliment/test.html')
+    diete = Diete.get_by_id(1)
+    return render_template('aliment/test.html', diete=diete)
 
 @app.route('/get_filtered_data_dietes', methods=['POST'])
 def get_filtered_data_dietes():
