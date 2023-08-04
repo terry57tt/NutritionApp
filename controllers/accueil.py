@@ -20,6 +20,7 @@ def accueil():
 
 @app.route('/init')
 def init():
+    db.drop_all()
     db.create_all()
 
     nouvel_utilisateur = Utilisateur(nom='Tempestini',

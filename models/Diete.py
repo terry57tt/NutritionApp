@@ -20,16 +20,28 @@ class Diete(db.Model):
         return Portion.query.join(Aliment).filter(Portion.diete == self.id).order_by(Portion.label_portion, Aliment.titre).all()
     
     def total_kcal(self):
-        return sum([portion.kcal_portion() for portion in self.portions_associees()])
+        if(self.portions_associees()):
+            return sum([portion.kcal_portion() for portion in self.portions_associees()])
+        else:
+            return 0
     
     def total_proteines(self):
-        return sum([portion.proteines_portion() for portion in self.portions_associees()])
+        if(self.portions_associees()):
+            return sum([portion.proteines_portion() for portion in self.portions_associees()])
+        else:
+            return 0
     
     def total_glucides(self):
-        return sum([portion.glucides_portion() for portion in self.portions_associees()])
-    
+        if(self.portions_associees()):
+            return sum([portion.glucides_portion() for portion in self.portions_associees()])
+        else:
+            return 0
+            
     def total_lipides(self):
-        return sum([portion.lipides_portion() for portion in self.portions_associees()])
+        if(self.portions_associees()):
+            return sum([portion.lipides_portion() for portion in self.portions_associees()])
+        else:
+            return 0
     
     def search_by_titre(filter_value):
         return Diete.query.filter(Diete.titre_diete.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()

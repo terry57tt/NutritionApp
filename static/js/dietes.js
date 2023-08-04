@@ -1,3 +1,7 @@
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 function ajouterQuantite(alimentId,idDiete) {
   var quantiteInput = document.getElementById("quantite" + alimentId);
   var quantite = quantiteInput.value;
@@ -82,9 +86,13 @@ function updateData() {
           return;
         }
 
-        // Afficher les éléments de la page actuelle
         response.data.forEach(function(item) {
-          dataContainer.append('<tr class="element_aliment"><td style="width: 40%;">' + item.titre + '</td><td style="width: 30%;">' + item.kcal + ' kcal</td><td style="width: 30%;">' + item.proteines + ' g/p</td><td><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal' + item.id + '"><i class="fa fa-plus"></i></button>' + fenetre_modale(item) + '</td></tr>');
+          dataContainer.append('<tr class="element_aliment"><td style="width: 40%;">' 
+          + item.titre + '</td><td style="width: 30%;">'
+          + item.kcal + ' kcal</td><td style="width: 30%;">'
+          + item.proteines + ' g/p</td><td><button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Ajouter" data-bs-toggle="modal" data-bs-target="#modal'
+          + item.id + '"><i class="fa fa-plus"></i></button>'
+          + fenetre_modale(item) + '</td></tr>');
         });
 
         // Mise à jour de la pagination

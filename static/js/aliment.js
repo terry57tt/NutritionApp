@@ -188,7 +188,7 @@ function supprimer_aliment(id){
           updateData();
         },
         error: function() {
-            alert('Erreur lors de la validation de l\'aliment.');
+            alert('Erreur lors de la suppression de l\'aliment.');
         }
     });
 }
@@ -289,11 +289,14 @@ function modal_modifier_aliment(aliment, test="autre"){
                   </div>
                   <div class="container">
                     <div class="row">
-                      <div class="col-md-9 mb-3">
+                      <div class="col-md-5 mb-3">
                         <div class="input-group description">
                           <span class="input-group-text">Description</span>
                           <textarea id="description" name="description" class="form-control">${aliment.description}</textarea>
                         </div>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <img src="/static/upload/${aliment.photo}" height="80" width="80" onerror="this.src='/static/images/empty_photo.png';">
                       </div>
                       <div class="col-md-3 mb-3">
                           <div class="form-check">

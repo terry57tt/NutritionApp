@@ -2,7 +2,7 @@ from setup_sql import db, MAX_RESULTS
 
 class Aliment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(255), nullable=True, unique=True)
+    titre = db.Column(db.String(255), nullable=True, server_default='')
     kcal = db.Column(db.Integer, nullable=True, server_default='0')
     proteines = db.Column(db.Integer, nullable=True, server_default='0')
     glucides = db.Column(db.Integer, nullable=True, server_default='0')

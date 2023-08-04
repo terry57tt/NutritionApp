@@ -3,10 +3,12 @@ from models.Utilisateur import Utilisateur
 from models.Diete import Diete
 from models.Aliment import Aliment
 from datetime import datetime, date
-from setup_sql import db
+from setup_sql import db, UPLOAD_FOLDER
 import pdfkit
 from urllib.parse import urlparse
 import pandas as pd
+import os
+import uuid
 
 from controllers import app
 
@@ -18,35 +20,45 @@ def aliments():
 @app.route('/ajouter_aliment', methods=['GET', 'POST'])
 def ajouter_aliment():
     if request.method == 'POST':
+
+        new_aliment = Aliment()
+
         titre = request.form['titre']
         kcal = int(request.form['kcal']) if request.form['kcal'] else None
         proteines = int(request.form['proteines']) if request.form['proteines'] else None
         glucides = int(request.form['glucides']) if request.form['glucides'] else None
         lipides = int(request.form['lipides']) if request.form['lipides'] else None
         categorie = request.form['categorie']
-        fichier = request.files['fichier_photo']
+
         photo = ''
-        if fichier.filename != '': # si une photo a été uploadée
-            if fichier.filename.endswith('.jpg'): # si la photo est au format jpg
-                photo = fichier.filename
+        fichier = request.files['fichier_photo']
+        if fichier.filename != '':
+            if fichier.filename.endswith(('.jpg', '.jpeg', '.png')):  # Utilisez tuple pour les extensions valides
+
+                unique_id = str(uuid.uuid4().hex)
+                extension = os.path.splitext(fichier.filename)[1]
+                nouveau_nom_fichier = f"{unique_id}{extension}"
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                path = os.path.join(UPLOAD_FOLDER, nouveau_nom_fichier)
+                fichier.save(path)
+                photo = nouveau_nom_fichier
             else :
-                flash('Erreur dans le chargement de la photo (format jpg uniquement)', 'danger')
+                flash('Erreur dans le chargement de la photo (formats jpg, jpeg ou png uniquement)', 'danger')
+
         description = request.form['description']
         unite = request.form['unite']
 
-        food = Aliment(
-            titre=titre,
-            kcal=kcal,
-            proteines=proteines,
-            glucides=glucides,
-            lipides=lipides,
-            categorie=categorie,
-            photo=photo,
-            description=description,
-            unite=unite
-        )
+        new_aliment.titre = titre
+        new_aliment.kcal = kcal
+        new_aliment.proteines = proteines
+        new_aliment.glucides = glucides
+        new_aliment.lipides = lipides
+        new_aliment.categorie = categorie
+        new_aliment.photo = photo
+        new_aliment.description = description
+        new_aliment.unite = unite
 
-        db.session.add(food)
+        db.session.add(new_aliment)
         db.session.commit()
 
         flash('L\'aliment a été ajouté avec succès', 'success')
@@ -70,11 +82,22 @@ def modifier_aliment_post(id):
         aliment_courant.lipides = int(request.form['lipides']) if request.form['lipides'] else None
         aliment_courant.categorie = request.form['categorie']
         fichier = request.files['fichier_photo']
+
         if fichier.filename != '':
-            if fichier.filename.endswith('.jpg'):
-                aliment_courant.photo = fichier.filename
+            if fichier.filename.endswith(('.jpg', '.jpeg', '.png')):  # Utilisez tuple pour les extensions valides
+                if os.path.exists(os.path.join(UPLOAD_FOLDER, aliment_courant.photo)):
+                    os.remove(os.path.join(UPLOAD_FOLDER, aliment_courant.photo))
+
+                unique_id = str(uuid.uuid4().hex)
+                extension = os.path.splitext(fichier.filename)[1]
+                nouveau_nom_fichier = f"{unique_id}{extension}"
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                path = os.path.join(UPLOAD_FOLDER, nouveau_nom_fichier)
+                fichier.save(path)
+                aliment_courant.photo = nouveau_nom_fichier
             else :
-                flash('Erreur dans le chargement de la photo (format jpg uniquement)', 'danger')
+                flash('Erreur dans le chargement de la photo (formats jpg, jpeg ou png uniquement)', 'danger')
+
         aliment_courant.description = request.form['description']
         aliment_courant.unite = request.form['unite']
 

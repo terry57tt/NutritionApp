@@ -47,7 +47,7 @@ const user = tableElement.dataset.user;
                     <td class="colonne_table_30 primary">${item.titre_diete}</td>
                     <td class="colonne_table_20 third">${affichage_createur(item.createur)}</td>
                     <td class="colonne_table_20 third">${changeFormat(item.date)}</td>
-                    <td class="colonne_table_30 primary">${affichage_buttons(item.id)}</td>
+                    <td class="colonne_table_30 primary">${affichage_buttons(item.id,item.titre_diete)}</td>
                 </tr>
                 `);
           });
@@ -127,14 +127,14 @@ function affichage_createur(createur){
     return createur.prenom + " " + createur.nom;
 }
 
-function affichage_buttons(id){
+function affichage_buttons(id,titre){
     if(mode == "voir"){
-        return `<button onclick="voir_diete(${id})" class="btn btn-primary"><i class="fa fa-eye"></i></button>
-        <button onclick="modifier_diete(${id})" class="btn btn-primary"><i class="fa fa-pencil"></i></button>
-        <button onclick="supprimer_diete(${id})" class="btn btn-danger"><i class="fa fa-trash"></i></button>`;
+        return `<button onclick="voir_diete(${id})" class="btn btn-primary" data-toggle="tooltip" title="Voir"><i class="fa fa-eye"></i></button>
+        <button onclick="modifier_diete(${id})" class="btn btn-primary" data-toggle="tooltip" title="Modifier"><i class="fa fa-pencil"></i></button>
+        <button class="btn btn-danger" data-toggle="tooltip" title="Supprimer" data-bs-toggle="modal" data-bs-target="#modal${id}"><i class="fa fa-trash"></i></button>${modal_confirmtion_suppression_diete(id,titre)}`;
     } else if(mode == "changer"){
-        return `<button onclick="voir_diete(${id})" class="btn btn-primary"><i class="fa fa-eye"></i></button>
-        <button onclick="changer_diete(${id})" class="btn btn-primary"><i class="fa fa-hand-o-up"></i></button>`;
+        return `<button onclick="voir_diete(${id})" class="btn btn-primary" data-toggle="tooltip" title="Voir" data-toggle="tooltip" title="Voir"><i class="fa fa-eye"></i></button>
+        <button onclick="changer_diete(${id})" class="btn btn-primary" data-toggle="tooltip" title="Choisir" data-toggle="tooltip" title="Choisir"><i class="fa fa-hand-o-up"></i></button>`;
     }
 }
 
@@ -153,4 +153,23 @@ function supprimer_diete(id){
 function changer_diete(id){
     window.location.href = "/choisir_diete/" + id + "/" + user;
 }
-    
+
+function modal_confirmtion_suppression_diete(id,titre){
+  return `<div class="modal fade" id="modal${id}" tabindex="-1" aria-labelledby="modal${id}Label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal${id}Label">Supprimer la diète « ${titre} » ?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <div class="modal-body">
+              <p>La diète sera suprrimée pour tous les utilisateurs.</p>
+            </div>
+            <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="supprimer_diete(${id})">Supprimer</button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+}

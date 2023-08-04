@@ -10,145 +10,190 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
-<div class="info_user">
-  <p class="text-center">
-    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Informations</button>
-    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Calories</button>
-    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Macronutriments</button>  
-  </p>
-  <div class="row">
-    <div class="col">
-      <div class="collapse multi-collapse" id="multiCollapseExample1">
-        <div class="bg-light">
-          <ul class="list-unstyled text-center">
-            <li><strong>Âge: </strong>{{ utilisateur.age }} ans</li>
-            <li><strong>Taille: </strong>{{ utilisateur.taille }} cm</li>
-            <li><strong>Poids: </strong>{{ utilisateur.poids }} kg</li>
-          </ul>
-        </div>
+<script>
+  {% if utilisateur.sexe == 'homme' %}
+  {% set calories = (((13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607)* 1.55)|round|int %}
+  {% else %}
+  {% set calories = (((9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051)* 1.55)|round|int %}
+  {% endif %}
+
+  const calories = {{ calories }};
+
+  {% if diete %}
+    {% set total_macros = diete.total_proteines()*4 + diete.total_lipides()*9 + diete.total_glucides()*4 %}
+
+    {% if total_macros == 0 %}
+        {% set total_macros = 1 %}
+    {% endif %}
+
+    {% set pourcentage_proteines = (diete.total_proteines()*4 / total_macros * 100)|round|int %}
+    {% set pourcentage_lipides = (diete.total_lipides()*9 / total_macros * 100)|round|int %}
+    {% set pourcentage_glucides = (diete.total_glucides()*4 / total_macros * 100)|round|int %}
+  {% else %}
+    {% set pourcentage_proteines = 1 %}
+    {% set pourcentage_lipides = 1 %}
+    {% set pourcentage_glucides = 1 %}
+  {% endif %}
+
+  const pourcentage_proteines = {{ pourcentage_proteines }};
+  const pourcentage_lipides = {{ pourcentage_lipides }};
+  const pourcentage_glucides = {{ pourcentage_glucides }};
+
+  const objectif_proteines = {{ (utilisateur.poids * 1.8)|round|int }} + " - " + {{ (utilisateur.poids * 2.2)|round|int }}
+  const objectif_lipides = {{ (utilisateur.poids * 0.8)|round|int }} + " - " + {{ (utilisateur.poids * 1)|round|int }}
+  const objectif_glucides = {{ (calories * 0.4 / 4)|round|int }} + " - " + {{ (calories * 0.6 / 4)|round|int }}
+</script>
+
+<div class="dashboard-wrapper">
+  <!-- Ligne 1 -->
+  <div class="container">
+      <div class="row">
+        <!-- Ligne 1 Colonne 1 -->
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body">
+                <h4 class="card-title text-center">Profil</h4>
+                <div class="card-2-2">
+                  <div class="card-sub-element widget_numbers color-yellow">
+                      <h3> {{ utilisateur.age }} ans </h3>
+                      <span class="info-little"> {{ utilisateur.prenom }} {{ utilisateur.nom }}</span>
+                  </div>
+                  <div class="card-sub-element widget_numbers color-blue">
+                      <h3> {{ utilisateur.taille }} cm </h3>
+                      <span class="info-little"> {{ utilisateur.sexe }} </span>
+                  </div> 
+                  <div class="card-sub-element widget_numbers color-red">
+                      <h3> {{ utilisateur.poids }} kg </h3>
+                      
+                      {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
+                      <span class="info-little"> IMC = {{ imc }} </span>
+                  </div> 
+                  <div class="card-sub-element widget_numbers color-green">
+                      <h3> Actif </h3>
+                      <span class="info-little badge badge-info">
+                        <span class="badge badge-info">Vegan</span>
+                      </span>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          </div>
+          <!-- Ligne 1 Colonne 2 -->
+          <div class="col-md-4">
+              <div class="card mb-4">
+                  <div class="card-body text-center">
+                      <h4 class="card-title">Macronutriments</h4>
+                      <h6 class="text-muted card-subtitle mb-2"></h6>
+                      <div class="card_container circle_chart">
+                            <canvas id="macro_chart"></canvas>
+                      </div>
+                  </div>
+              </div>
+          </div>
+         <!-- Ligne 1 Colonne 3 -->
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body">
+                  <h4 class="card-title text-center">Besoins</h4>
+                  <h6 class="text-muted card-subtitle mb-2"></h6>
+
+                  <div class="card_container">
+                      <canvas id="evolution_chart" width="300" height="250"></canvas>
+                  </div>
+              </div>
+            </div>
+          </div>
       </div>
-    </div>
-    <div class="col">
-      <div class="collapse multi-collapse" id="multiCollapseExample2">
-        <div class="bg-light">
-          <ul class="list-unstyled text-center">
-            {% if utilisateur.sexe == 'homme' %}
-            {% set calories = (((13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607)* 1.55)|round|int %}
-            {% else %}
-            {% set calories = (((9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051)* 1.55)|round|int %}
-            {% endif %}
-            <li><strong>Sèche: </strong>{{ calories - 500 }} kcal</li>
-            <li><strong>Maintien: </strong>{{ calories }} kcal</li>
-            <li><strong>Prise de Masse: </strong>{{ calories + 500 }} kcal</li>
-          </ul>
-        </div>
+  </div>
+
+  <!-- Ligne 2 -->
+  <div class="container">
+      <div class="row">
+          <!--div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h4 class="card-title text-center">Particularités</h4>
+                  <span class="info-little badge badge-info">
+                    <span class="badge badge-info">Vegan</span>
+                  </span>
+                </div>
+              </div>
+            <div class="card mb-4">
+            <div class="card-body text-center">
+                <h4 class="card-title">Repas</h4>
+                <h6 class="text-muted card-subtitle mb-2"></h6>
+                  
+                <div class="card_container content_hidden">
+                    <canvas id="objectifs_chart" width="400" height="435"></canvas>
+                </div>
+            </div>
+          </div>
+        </div-->
+          <!-- Ligne 2 Colonne 2 -->
+          <div class="col-md-12">
+            <div class="card mb-4">
+              <div class="card-body">
+                {% if diete %}
+                <div class="gauche-droite">
+                    <button class="btn btn-lg gauche-droite" type="button" data-toggle="collapse" data-target="#element1Content" aria-expanded="true" aria-controls="element1Content">
+                      <i class="fa fa-angle-down"></i>
+                    </button>
+                    <span class="card-title">{{ diete.titre_diete}}</span>
+                    <button class="btn btn-lg gauche-droite" type="button" data-toggle="collapse" data-target="#element1Content" aria-expanded="true" aria-controls="element1Content">
+                      <i class="fa fa-angle-down"></i>
+                    </button>
+                </div>
+                  <h6 class="text-muted card-subtitle mb-2"></h6>
+                  <div id="element1Content" class="collapse custom-collapse" aria-labelledby="element1Header" data-parent="#monAccordeon">
+                    {% with diete=diete %}
+                        {% include 'diete/liste_aliments_diete_test.html' %}    
+                    {% endwith %}
+                  {% else %}
+                    <h2 class="text-center">Aucune diète choisie</h2>
+                  {% endif %}
+                </div>                  
+              </div>
+          </div>
+          </div>
       </div>
+  </div>
+
+  <!-- Ligne 3 -->
+  <div class="container">
+    <div class="row">
+      
     </div>
-    <div class="col">
-      <div class="collapse multi-collapse" id="multiCollapseExample3">
-        <div class="bg-light">
-          <ul class="list-unstyled text-center">
-            <li><strong>Protéines: </strong>{{ (utilisateur.poids * 1.8)|round|int }}-{{ (utilisateur.poids * 2.2)|round|int }} g</li>
-            <li><strong>Lipides: </strong>{{ (utilisateur.poids * 0.8)|round|int }}-{{ (utilisateur.poids * 1)|round|int }} g</li>
-            <li><strong>Glucides: </strong>{{ (calories * 0.4 / 4)|round|int }}-{{ (calories * 0.6 / 4)|round|int }} g</li>
-          </ul>
-        </div>
+  </div>
+
+  <!-- Ligne 4 -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        {% if diete %}
+          <div class="btn_changer_imprimer">
+            <div class="d-flex justify-content-center">
+              <div class="section text-center">
+                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
+                <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i></a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="btn_changer_imprimer">
+            <div class="d-flex justify-content-center">
+              <div class="section text-center">
+                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir une diète</a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
-{% if diete != None %}
-  <div class="programming-stats">
-    <div class="chart-container">
-      <canvas class="my-chart"></canvas>
-    </div>
-    <div class="details">
-      <ul></ul>
-    </div>
-  </div>
-{% endif %}
 </div>
 
-{% set navbar_included = true %}
 
-{% if diete != None %}
+<script src="{{ url_for('static', filename='js/accueil.js') }}"></script>
 
-  {% set total_macros = diete.total_proteines()*4 + diete.total_lipides()*9 + diete.total_glucides()*4 %}
-
-  {% if total_macros == 0 %}
-    {% set total_macros = 1 %}
-  {% endif %}
-  
-  {% set pourcentage_proteines = (diete.total_proteines()*4 / total_macros * 100)|round|int %}
-  {% set pourcentage_lipides = (diete.total_lipides()*9 / total_macros * 100)|round|int %}
-  {% set pourcentage_glucides = (diete.total_glucides()*4 / total_macros * 100)|round|int %}
-
-  {% with diete=diete %}
-    {% include 'diete/liste_aliments_diete.html' %}
-  {% endwith %}
-
-  <div class="btn_changer_imprimer">
-    <div class="d-flex justify-content-center">
-      <div class="section text-center">
-        <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
-        <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-pdf-o"></i></a>
-        <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i></a>
-      </div>
-    </div>
-  </div>
-{% else %}
-
-  <h1 class="text-center">Vous n'avez pas encore de diète</h1>
-  <div class="btn_changer_imprimer">
-    <div class="d-flex justify-content-center">
-      <div class="section text-center">
-        <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir une diète</a>
-      </div>
-    </div>
-  </div>
-{% endif %}
-
-
-<script>
-  const chartData = {
-    labels: ["Glucides", "Lipides", "Protéines"],
-    data: [{{ pourcentage_glucides }}, {{ pourcentage_lipides }}, {{ pourcentage_proteines }}],
-  };
-  
-  const myChart = document.querySelector(".my-chart");
-  const ul = document.querySelector(".programming-stats .details ul");
-
-  new Chart(myChart, {
-    type: "doughnut",
-    data: {
-      labels: chartData.labels,
-      datasets: [
-        {
-          label: "Macronutriments",
-          data: chartData.data,
-        },
-      ],
-    },
-    options: {
-      borderWidth: 10,
-      borderRadius: 2,
-      hoverBorderWidth: 0,
-      plugins: {
-        legend: {
-          display: false,
-        },
-      },
-    },
-  });
-  
-  const populateUl = () => {
-    chartData.labels.forEach((l, i) => {
-      let li = document.createElement("li");
-      li.innerHTML = `${l}: <span class='percentage'>${chartData.data[i]}%</span>`;
-      ul.appendChild(li);
-    });
-  };
-  
-  populateUl();
-</script>
 {% endblock %}
-

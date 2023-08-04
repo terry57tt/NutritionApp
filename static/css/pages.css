@@ -201,3 +201,14 @@
     font-size: 0.8em;
     font-weight: 400;
 }
+
+.gauche-droite{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.circle_chart{
+    width: 100%;
+    height: 100%;
+}

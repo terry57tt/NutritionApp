@@ -20,7 +20,7 @@
         <div class="col-md-12 input-group mb-3">
           <input type="text" id="titre_diete" name="titre_diete" class="form-control" placeholder="Titre" value="{{ diete.titre_diete }}" readonly required>
           <div class="input-group-append">
-            <span class="btn input-group-text" style="border-color: grey;" data-bs-toggle="modal" data-bs-target="#modalChangeTitle" id="titre_diete">Changer</span>
+            <span class="btn input-group-text" style="border-color: grey;" data-toggle="tooltip" title="Changer titre" data-bs-toggle="modal" data-bs-target="#modalChangeTitle" id="titre_diete">Changer</span>
           </div>
         </div>
 
@@ -81,7 +81,7 @@
               <td>{{ portion.proteines_portion() }} g/p</td>
               <td>{{ portion.kcal_portion() }} kcal</td>
               <td class="text-center">             
-                <a href="{{ url_for('controllers.enlever_aliment_diete', id_portion=portion.id, id_diete=diete.id) }}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                <a href="{{ url_for('controllers.enlever_aliment_diete', id_portion=portion.id, id_diete=diete.id) }}" data-toggle="tooltip" title="Enlever" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
               </td>
             </tr>
             {% endfor %}
