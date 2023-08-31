@@ -189,7 +189,53 @@ function fenetre_modale(item){
             </div>
           </div>`;
 }
-
+/*
+function fenetre_modale(item){
+  return `<div class="modal fade" id="modal${item.id}" tabindex="-1" aria-labelledby="modal${item.id}Label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal${item.id}Label">Ajouter la quantité</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="input-group">
+                    <input type="number" id="quantite${item.id}" class="form-control" min="1" required placeholder="Quantité">
+                    
+                    <div class="input-group-prepend">
+                      <div class="input-group-text" id="btnGroupAddon2">`+ unite_to_string(item.unite) + item.titre +`</div>
+                    </div>
+                  </div>
+                  <div id="list1" class="dropdown-check-list" tabindex="100">
+                      <span class="anchor">Repas</span>
+                      <ul class="items">
+                        <li><input type="checkbox" />Matin</li>
+                        <li><input type="checkbox" />Collation Matin</li>
+                        <li><input type="checkbox" />Midi</li>
+                        <li><input type="checkbox" />Collation Après-midi</li>
+                        <li><input type="checkbox" />Soir</li>
+                        <li><input type="checkbox" />Collation Soir</li>
+                      </ul>
+                  </div>
+                <script>
+                var checkList = document.getElementById('list1');
+                checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
+                  if (checkList.classList.contains('visible'))
+                    checkList.classList.remove('visible');
+                  else
+                    checkList.classList.add('visible');
+                };
+                </script>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <button type="button" class="btn btn-primary" onclick="ajouterQuantite(${item.id}, ${dieteId})">Ajouter</button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+}
+*/
 function unite_to_string(unite){
   if(unite == 0){
     return "g ";

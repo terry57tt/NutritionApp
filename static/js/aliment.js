@@ -1,3 +1,7 @@
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 function checkFileSelectedAliment() {
     var fileInput = document.getElementById('fichier_aliment');
     var button = document.getElementById('bouton_importer_aliment');
@@ -147,10 +151,10 @@ $(document).ready(function() {
 
 function aliment_valide(item){
     if(item.valide){
-        return `<button onclick="invalider_aliment(${item.id})" class="btn btn-sm btn-danger"><i class="fa fa-close"></i></button>`
+        return `<button onclick="invalider_aliment(${item.id})" data-toggle="tooltip" title="Aliment invalide" class="btn btn-sm btn-danger"><i class="fa fa-close"></i></button>`
     }
     else{
-        return `<button onclick="valider_aliment(${item.id})" class="btn btn-sm btn-success"><i class="fa fa-check"></i></button>`
+        return `<button onclick="valider_aliment(${item.id})" data-toggle="tooltip" title="Aliment valide" class="btn btn-sm btn-success"><i class="fa fa-check"></i></button>`
     }
 };
 

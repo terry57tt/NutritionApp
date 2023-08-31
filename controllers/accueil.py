@@ -1,8 +1,9 @@
-from flask import render_template, request
+from flask import render_template, request, Response
 from models.Utilisateur import Utilisateur
 from models.Diete import Diete
 from flask import redirect, url_for
 from setup_sql import db
+import os
 
 from controllers import app
 
@@ -35,3 +36,31 @@ def init():
     db.session.commit()
 
     return redirect(url_for('controllers.accueil'))
+
+@app.route('/data_reader')
+def data_reader():
+    import pandas as pd
+
+    csv = "titre,kcal,proteines,glucides,lipides,categorie,photo,description,unite\n"
+    for file in os.listdir('static/excel'):
+        if file.endswith('.xlsx'):
+            df = pd.read_excel('static/excel/' + file, sheet_name='composition abrégée')
+            obj = df.iloc[3,0]
+            titre = obj.replace(',', '')
+            obj_kcal = df.iloc[8,1]
+            kcal = obj_kcal.replace(',', '.')
+            obj_proteines = df.iloc[9,1]
+            proteines = obj_proteines.replace(',', '.')
+            obj_glucides = df.iloc[10,1]
+            glucides = obj_glucides.replace(',', '.')
+            obj_lipides = df.iloc[11,1]
+            lipides = obj_lipides.replace(',', '.')
+            csv += f"{titre},{kcal},{proteines},{glucides},{lipides},Autre, , ,0\n"
+
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                    f"attachment; filename=aliments.csv"})
+
+

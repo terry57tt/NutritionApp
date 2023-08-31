@@ -8,6 +8,11 @@ from setup_sql import db
 import pdfkit
 from urllib.parse import urlparse
 import pandas as pd
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
 from controllers import app
 
@@ -210,3 +215,35 @@ def importer_csv():
         flash('Erreur dans le chargement du fichier', 'danger')
         
     return redirect(url_for('controllers.dietes'))
+
+@app.route('/envoyer_mail/<int:id_diete>', methods=['GET', 'POST'])
+def envoyer_mail(id_diete):
+    utilisateur_courrant = Utilisateur.query.filter_by(id=1).first()
+    diet = Diete.get_by_id(id_diete)
+    out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
+    pdf = pdfkit.from_string(out, False)
+
+    sender_email = 'terrynutritionapp@gmail.com'
+    sender_password = 'qqfpvggfqadsuxkx'
+    receiver_email = 'terry57tt@gmail.com'
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    msg['Subject'] = f'Diète {diet.titre_diete}'
+    msg.attach(MIMEText('Bonjour,\n\nVeuillez trouver ci-joint la diète demandée.\n\nCordialement,\n\nTerry Nutrition App', 'plain'))
+    
+    pdf_attachment = MIMEBase('application', 'octet-stream')
+    pdf_attachment.set_payload(pdf)
+    encoders.encode_base64(pdf_attachment)
+    pdf_attachment.add_header('Content-Disposition', f'attachment; filename=diete.pdf')
+    msg.attach(pdf_attachment)
+
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(sender_email, sender_password)
+
+    server.sendmail(sender_email, receiver_email, msg.as_string())
+    server.quit()
+
+    flash('La diète a été envoyée par mail avec succès à ' + receiver_email, 'success')
+    return redirect(url_for('controllers.accueil'))

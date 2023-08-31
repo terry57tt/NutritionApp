@@ -163,7 +163,7 @@ function modal_confirmtion_suppression_diete(id,titre){
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             <div class="modal-body">
-              <p>La diète sera suprrimée pour tous les utilisateurs.</p>
+              <p>La diète sera supprimée pour tous les utilisateurs.</p>
             </div>
             <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

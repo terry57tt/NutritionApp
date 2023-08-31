@@ -8,6 +8,9 @@ database.db
 # Virtual Environment
 venv/
 
+# Uplaod folder
+*/upload/
+
 # Compiled Python files
 *.pyc
 
