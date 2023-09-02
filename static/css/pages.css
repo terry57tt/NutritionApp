@@ -52,6 +52,14 @@
     border-radius: 10px;
 }
 
+.suivi_window{
+    width: 80%;
+    margin: 30px auto; /* center element */
+    padding: 30px;
+    max-width: 900px;
+    border-radius: 10px;
+}
+
 .imc_window{
     width: 80%;
     margin: 30px auto; /* center element */
@@ -263,4 +271,43 @@
 
 .dropdown-check-list.visible .items {
   display: block;
+}
+
+.align_items_horizontal{
+    display: flex;
+    flex-direction: row;
+}
+
+.gap_10{
+    gap: 10px;
+}
+
+.gap_2{
+    gap: 2px;
+}
+
+.justify_content_center{
+    justify-content: center;
+}
+
+.justify_content_left{
+    justify-content: left;
+}
+
+.vertical_center{
+    padding-top: 5px;
+}
+
+.padding_10{
+    padding-top: 10px;
+}
+
+.images_center{
+    padding-left: 40px;
+}
+
+.separation{
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 15px;
 }

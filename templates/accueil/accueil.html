@@ -71,6 +71,7 @@
                   <div class="card-sub-element widget_numbers color-green">
                       <span class="info-little">Protéines : {{ (utilisateur.poids * 2.2)|round|int }} g </span>
                       <span class="info-little">Lipides : {{ (utilisateur.poids * 1)|round|int }} g </span>
+                      <span class="info-little">Sel : 6 g </span>
                   </div>
                 </div> 
               </div>
@@ -89,7 +90,9 @@
               </div>
           </div>
          <!-- Ligne 1 Colonne 3 -->
-          <div class="col-md-4">
+
+          <!-- not displayed -->
+          <div style="display:none;" class="col-md-4">
             <div class="card mb-4">
               <div class="card-body">
                   <h4 class="card-title text-center">Besoins</h4>
@@ -97,6 +100,69 @@
 
                   <div class="card_container">
                       <canvas id="evolution_chart" width="300" height="250"></canvas>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <!-- end not displayed -->
+
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body">
+                  <h4 class="card-title text-center">Besoins</h4>
+                  <h6 class="text-muted card-subtitle mb-2"></h6>
+
+                  <div class="card_container">
+                      <input type="range" class="form-range" min="0" max="4" step="1" id="customRange">
+
+                      <div class="align_items_horizontal gap_10 justify_content_center">
+                        <p id="activityLabel" class="text-center font-weight-bold">Actif · 1,55</p>
+                        <i id="info_activity" class="fa fa-info-circle vertical_center" data-toggle="tooltip" title="Vous faites régulièrement des exercices physiques (3 à 5 fois par semaine)"></i>
+                      </div>
+                      
+                      <input type="range" class="form-range" min="0" max="2" step="1" id="customRangeType">
+                      
+                      <p class="text-center font-weight-bold" id="activityLabelType">Maintien · 1</p>
+
+                      <div>
+                        {% if utilisateur.sexe == 'homme' %}
+                          {% set calories_HB = (13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607 %}
+                          {% set calories_BA = ((1.083*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
+                        {% else %}
+                          {% set calories_HB = (9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051 %}
+                          {% set calories_BA = ((0.963*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
+                        {% endif %}
+                        
+                        {% set calories_OX = (14.2*utilisateur.poids)+593 %}
+                        {% set calories_SC = (15.057*utilisateur.poids)+692.2 %}
+                        
+                        <p id="totalMB_HB" style="display: none;">{{ calories_HB }}</p>
+                        <p id="totalMB_BA" style="display: none;">{{ calories_BA }}</p>
+                        <p id="totalMB_OX" style="display: none;">{{ calories_OX }}</p>
+                        <p id="totalMB_SC" style="display: none;">{{ calories_SC }}</p>
+
+                        <div class="align_items_horizontal gap_2 justify_content_left">
+                          <p>Harris & Benedict : </p>
+                          <p class="font-weight-bold" id="caloriesLabel_HB">{{ (calories_HB * 1.55)|round|int }}</p>
+                          <p class="font-weight-bold">kcal</p>
+                        </div>
+                        <div class="align_items_horizontal gap_2 justify_content_left">
+                          <p> Black et al. : </p>
+                          <p class="font-weight-bold" id="caloriesLabel_BA">{{ (calories_BA * 1.55)|round|int }}</p>
+                          <p class="font-weight-bold">kcal</p>
+                        </div>
+                        <div class="align_items_horizontal gap_2 justify_content_left">
+                          <p> Schofield : </p>
+                          <p class="font-weight-bold" id="caloriesLabel_SC">{{ (calories_SC * 1.55)|round|int }}</p>
+                          <p class="font-weight-bold">kcal <i class="fa fa-info-circle" data-toggle="tooltip" title="Valable uniquement pour les hommes de 18-29 ans" data-placement="right"></i></p>
+                        </div>
+                        <div class="align_items_horizontal gap_2 justify_content_left">
+                          <p> Oxford : </p>
+                          <p class="font-weight-bold" id="caloriesLabel_OX">{{ (calories_OX * 1.55)|round|int }}</p>
+                          <p class="font-weight-bold">kcal <i class="fa fa-info-circle" data-toggle="tooltip" title="Prend uniquement le poids en compte" data-placement="right"></i></p>
+                        </div>
+                      </div>
+
                   </div>
               </div>
             </div>
@@ -144,7 +210,7 @@
                   <h6 class="text-muted card-subtitle mb-2"></h6>
                   <div id="element1Content" class="collapse custom-collapse" aria-labelledby="element1Header" data-parent="#monAccordeon">
                     {% with diete=diete %}
-                        {% include 'diete/liste_aliments_diete_test.html' %}    
+                        {% include 'diete/liste_aliments_diete.html' %}    
                     {% endwith %}
                   {% else %}
                     <h2 class="text-center">Aucune diète choisie</h2>
@@ -171,10 +237,11 @@
           <div class="btn_changer_imprimer">
             <div class="d-flex justify-content-center">
               <div class="section text-center">
-                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Changer de diète</a>
-                <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
-                <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i></a>
-                <a href="{{ url_for('controllers.envoyer_mail',id_diete=diete.id) }}" class="btn btn-primary"><i class="fa fa-envelope-o"></i></a>
+                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary" data-toggle="tooltip" title="Changer de diète"><i class="fa fa-repeat"></i></a>
+                <a href="{{ url_for('controllers.voir_diete',id=diete.id) }}" class="btn btn-primary" data-toggle="tooltip" title="Détail diète"><i class="fa fa-eye"></i></a>
+                <a href="{{ url_for('controllers.print_diete_pdf',id_diete=diete.id) }}" class="btn btn-primary" target="_blank" data-toggle="tooltip" title="Exporter en PDF"><i class="fa fa-file-pdf-o"></i></a>
+                <a href="{{ url_for('controllers.export_csv',id_diete=diete.id) }}" class="btn btn-primary" data-toggle="tooltip" title="Exporter en CSV"><i class="fa fa-file-excel-o"></i></a>
+                <a href="{{ url_for('controllers.envoyer_mail',id_diete=diete.id) }}" class="btn btn-primary" data-toggle="tooltip" title="Envoyer par mail"><i class="fa fa-envelope-o"></i></a>
               </div>
             </div>
           </div>

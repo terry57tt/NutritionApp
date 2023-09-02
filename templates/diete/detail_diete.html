@@ -11,8 +11,15 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 <title>{% block title %} Détail {% endblock %}</title>
 
+<div class="content">
+<h2 class="text-center">
+    <b>{{ diete.titre_diete }}</b>
+</h2>
+
 {% with diete=diete %}
     {% include 'diete/liste_aliments_diete.html' %}
 {% endwith %}
+
+</div>
 
 {% endblock %}

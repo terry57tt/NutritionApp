@@ -225,7 +225,7 @@ def envoyer_mail(id_diete):
 
     sender_email = 'terrynutritionapp@gmail.com'
     sender_password = 'qqfpvggfqadsuxkx'
-    receiver_email = 'terry57tt@gmail.com'
+    receiver_email = utilisateur_courrant.mail
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
