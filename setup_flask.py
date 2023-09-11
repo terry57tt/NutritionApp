@@ -1,17 +1,7 @@
 import os
-from datetime import timedelta
-
-import pandas as pd
-import controllers, models
-
-from flask import Flask, render_template, request, url_for, redirect, flash, Response
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, date
-from sqlalchemy.orm import joinedload
-from urllib.parse import urlparse
+import controllers
+from flask import Flask
 from setup_sql import db
-
-import controllers, models
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'static/upload/'
@@ -39,5 +29,7 @@ flask_serv_intern.register_blueprint(controllers.app)
 with flask_serv_intern.app_context():
         db.create_all()
 
+if __name__ == "__main__":
+    flask_serv_intern.run(debug=True)
 
 

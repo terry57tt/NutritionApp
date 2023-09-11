@@ -136,7 +136,8 @@ def print_diete_pdf(id_diete):
     return html_to_pdf(out)
 
 def html_to_pdf(html,filename='diete.pdf',download=False):
-    pdf = pdfkit.from_string(html, False)
+    css = ['static/css/pages.css']
+    pdf = pdfkit.from_string(html, css=css)
     response = Response(pdf, mimetype='application/pdf')
     if download :
         response.headers.set('Content-Disposition', f'attachment; filename={filename}')

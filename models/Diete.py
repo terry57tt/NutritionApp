@@ -42,7 +42,31 @@ class Diete(db.Model):
             return sum([portion.lipides_portion() for portion in self.portions_associees()])
         else:
             return 0
-    
+        
+    def total_kcal_portion(self,int):
+        if(self.portions_associees()):
+            return sum([portion.kcal_portion() for portion in self.portions_associees() if portion.label_portion == int])
+        else:
+            return 0
+        
+    def total_proteines_portion(self,int):
+        if(self.portions_associees()):
+            return sum([portion.proteines_portion() for portion in self.portions_associees() if portion.label_portion == int])
+        else:
+            return 0
+        
+    def total_glucides_portion(self,int):
+        if(self.portions_associees()):
+            return sum([portion.glucides_portion() for portion in self.portions_associees() if portion.label_portion == int])
+        else:
+            return 0
+        
+    def total_lipides_portion(self,int):
+        if(self.portions_associees()):
+            return sum([portion.lipides_portion() for portion in self.portions_associees() if portion.label_portion == int])
+        else:
+            return 0
+        
     def search_by_titre(filter_value):
         return Diete.query.filter(Diete.titre_diete.like('%' + filter_value + '%')).limit(MAX_RESULTS).all()
     

@@ -311,3 +311,21 @@
     border-bottom: 1px solid #ccc;
     margin-bottom: 15px;
 }
+
+.totalRow {
+    display: none;
+}
+
+@media only screen and (max-width: 395px) {
+    
+.dashboard-wrapper{
+    width: 100%;
+    margin: auto auto; /* center element */
+    border-radius: 10px;
+}
+
+.secondary {
+    display: none;
+}
+
+  }
