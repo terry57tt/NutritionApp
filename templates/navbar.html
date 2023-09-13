@@ -1,5 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand ms-5" href="{{url_for('controllers.accueil')}}">
+  <a class="navbar-brand ms-5"
+  {% if current_user.is_authenticated %}
+    href="{{url_for('controllers.accueil')}}"
+  {% else %}
+    href="{{url_for('controllers.login')}}"
+  {% endif %}
+  >
       <div class="d-flex align-items-center">
         <img src="{{url_for('static', filename='images/logo.png')}}" alt="logo" width="50" height="50" class="d-inline-block align-text-top">
         <span class="ms-2">NutritionApp</span>
@@ -16,6 +22,7 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+    {% if current_user.is_authenticated %}
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item {% if page == 'accueil' %}active{% endif %}">
@@ -27,11 +34,28 @@
         <li class="nav-item {% if page == 'aliments' %}active{% endif %}">
           <a href="{{url_for('controllers.aliments')}}" class="nav-link">Aliments</a>
         </li>
+        <li class="nav-item {% if page == 'suivi' %}active{% endif %}">
+          <a href="{{url_for('controllers.suivi')}}" class="nav-link">Suivi</a>
+        </li>
         <li class="nav-item {% if page == 'reglages' %}active{% endif %}">
           <a href="{{url_for('controllers.reglages')}}" class="nav-link">Réglages</a>
         </li>
+        <li class="nav-item">
+          <a href="{{url_for('controllers.logout')}}" class="nav-link">Déconnexion</a>
+        </li>
       </ul>
     </div>
+    {% else %}
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item {% if page == 'login' %}active{% endif %}">
+          <a href="{{url_for('controllers.login')}}" class="nav-link">Connexion</a>
+        </li>
+        <li class="nav-item {% if page == 'signup' %}active{% endif %}">
+          <a href="{{url_for('controllers.signup')}}" class="nav-link">Inscription</a>
+        </li>
+      </ul>
+    {% endif %}
 
     <ol class="breadcrumb fil_ariane">
       {% if breadcrumb|length > 1 %} {# si on n'est pas sur la page d'accueil #}
@@ -46,6 +70,8 @@
           'detail': 'Détail diète',
           'modifier_aliment': 'Modifier aliment',
           'suivi': 'Suivi',
+          'login': 'Connexion',
+          'signup': 'Inscription',
         } %}
 
         {% for item in breadcrumb %}

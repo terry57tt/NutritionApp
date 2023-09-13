@@ -78,3 +78,17 @@ class Diete(db.Model):
             'createur': createur,
             'date': self.date,
         }
+    
+    def sets_of_portions(self):
+        portions_diet = self.portions_associees()
+
+        portions_par_type = {}
+
+        for portion in portions_diet:
+            type_portion = portion.label_portion
+            if type_portion not in portions_par_type:
+                portions_par_type[type_portion] = []
+            portions_par_type[type_portion].append(portion)
+
+        sets_of_portions = list(portions_par_type.values())
+        return sets_of_portions

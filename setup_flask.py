@@ -2,6 +2,8 @@ import os
 import controllers
 from flask import Flask
 from setup_sql import db
+from flask_login import LoginManager, login_user
+from models.Utilisateur import Utilisateur
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'static/upload/'
@@ -25,6 +27,17 @@ flask_serv_intern.jinja_env.add_extension('jinja2.ext.do')
 db.init_app(flask_serv_intern)
 
 flask_serv_intern.register_blueprint(controllers.app)
+
+# Setup the Flask-Login Manager
+login_manager = LoginManager()
+login_manager.init_app(flask_serv_intern)
+login_manager.login_view = 'controllers.login'
+login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
+login_manager.login_message_category = 'info'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Utilisateur.query.get(int(user_id))
 
 with flask_serv_intern.app_context():
         db.create_all()

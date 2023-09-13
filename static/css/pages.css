@@ -327,5 +327,9 @@
 .secondary {
     display: none;
 }
+}
 
-  }
+.login_signup{
+    margin: 30px auto;
+    padding: 20px;
+}

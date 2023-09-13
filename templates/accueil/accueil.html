@@ -11,11 +11,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
 <script>
-  {% if utilisateur.sexe == 'homme' %}
-  {% set calories = (((13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607)* 1.55)|round|int %}
-  {% else %}
-  {% set calories = (((9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051)* 1.55)|round|int %}
-  {% endif %}
+  {% if utilisateur.age and utilisateur.poids and utilisateur.taille %}
+    {% if utilisateur.sexe == 'homme' %}
+      {% set calories = (((13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607)* 1.55)|round|int %}
+    {% else %}
+      {% set calories = (((9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051)* 1.55)|round|int %}
+    {% endif %}
 
   const calories = {{ calories }};
 
@@ -39,16 +40,22 @@
   const pourcentage_lipides = {{ pourcentage_lipides }};
   const pourcentage_glucides = {{ pourcentage_glucides }};
 
-  const objectif_proteines = {{ (utilisateur.poids * 1.8)|round|int }} + " - " + {{ (utilisateur.poids * 2.2)|round|int }}
-  const objectif_lipides = {{ (utilisateur.poids * 0.8)|round|int }} + " - " + {{ (utilisateur.poids * 1)|round|int }}
-  const objectif_glucides = {{ (calories * 0.4 / 4)|round|int }} + " - " + {{ (calories * 0.6 / 4)|round|int }}
+    const objectif_proteines = {{ (utilisateur.poids * 1.8)|round|int }} + " - " + {{ (utilisateur.poids * 2.2)|round|int }}
+    const objectif_lipides = {{ (utilisateur.poids * 0.8)|round|int }} + " - " + {{ (utilisateur.poids * 1)|round|int }}
+    const objectif_glucides = {{ (calories * 0.4 / 4)|round|int }} + " - " + {{ (calories * 0.6 / 4)|round|int }}
+
+  {% endif %}
+
+   
 </script>
 
 <div class="dashboard-wrapper">
   <!-- Ligne 1 -->
   <div class="container">
+  {% if utilisateur.age and utilisateur.poids and utilisateur.taille %}
       <div class="row">
         <!-- Ligne 1 Colonne 1 -->
+
           <div class="col-md-4">
             <div class="card mb-4">
               <div class="card-body">
@@ -65,7 +72,7 @@
                   <div class="card-sub-element widget_numbers color-red">
                       <h3> {{ utilisateur.poids }} kg </h3>
                       
-                      {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
+                        {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
                       <span class="info-little"> IMC = {{ imc }} </span>
                   </div> 
                   <div class="card-sub-element widget_numbers color-green">
@@ -77,6 +84,7 @@
               </div>
             </div>
           </div>
+
           <!-- Ligne 1 Colonne 2 -->
           <div class="col-md-4">
               <div class="card mb-4">
@@ -105,7 +113,6 @@
             </div>
           </div>
           <!-- end not displayed -->
-
           <div class="col-md-4">
             <div class="card mb-4">
               <div class="card-body">
@@ -125,13 +132,13 @@
                       <p class="text-center font-weight-bold" id="activityLabelType">Maintien · 1</p>
 
                       <div>
-                        {% if utilisateur.sexe == 'homme' %}
-                          {% set calories_HB = (13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607 %}
-                          {% set calories_BA = ((1.083*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
-                        {% else %}
-                          {% set calories_HB = (9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051 %}
-                          {% set calories_BA = ((0.963*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
-                        {% endif %}
+                          {% if utilisateur.sexe == 'homme' %}
+                            {% set calories_HB = (13.707*utilisateur.poids)+(492.3*(utilisateur.taille/100))-(6.673*utilisateur.age)+77.607 %}
+                            {% set calories_BA = ((1.083*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
+                          {% else %}
+                            {% set calories_HB = (9.740*utilisateur.poids)+(172.9*(utilisateur.taille/100))-(4.737*utilisateur.age)+667.051 %}
+                            {% set calories_BA = ((0.963*utilisateur.poids**0.48)*(utilisateur.taille/100)**0.5*(utilisateur.age)**-0.13)*(1000/4.1855) %}
+                          {% endif %}                        
                         
                         {% set calories_OX = (14.2*utilisateur.poids)+593 %}
                         {% set calories_SC = (15.057*utilisateur.poids)+692.2 %}
@@ -166,10 +173,20 @@
                   </div>
               </div>
             </div>
-          </div>
-      </div>
-  </div>
 
+          </div>
+        </div>
+      </div>
+  {% else %}
+  <div class="row">
+    <div class="col-md-12 mb-4 bg-light p-4 rounded">
+      <h4 class="text-center mb-4">Veuillez renseigner votre taille et votre poids pour accéder à votre tableau de bord personnalisé.</h4>
+          <div class="section text-center mb-4">
+            <a href="{{ url_for('controllers.reglages',id_utilisateur=utilisateur.id) }}" class="btn btn-lg btn-primary">Renseigner mes informations</a>
+          </div>
+    </div>
+  </div>
+  {% endif %}
   <!-- Ligne 2 -->
   <div class="container">
       <div class="row">
@@ -249,7 +266,7 @@
           <div class="btn_changer_imprimer">
             <div class="d-flex justify-content-center">
               <div class="section text-center">
-                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-primary">Choisir une diète</a>
+                <a href="{{ url_for('controllers.changer_diete',id_utilisateur=utilisateur.id) }}" class="btn btn-lg btn-primary">Choisir une diète</a>
               </div>
             </div>
           </div>

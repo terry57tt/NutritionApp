@@ -9,15 +9,18 @@ from urllib.parse import urlparse
 import pandas as pd
 import os
 import uuid
+from flask_login import login_required, current_user
 
 from controllers import app
 
 @app.route('/aliments')
+@login_required
 def aliments():
     aliments = Aliment.get_all()
     return render_template('aliment/aliments.html', aliments=aliments)
 
 @app.route('/ajouter_aliment', methods=['GET', 'POST'])
+@login_required
 def ajouter_aliment():
     if request.method == 'POST':
 
@@ -67,11 +70,13 @@ def ajouter_aliment():
     return render_template('ajouter_aliment.html')
 
 @app.route('/modifier_aliment/<int:id>', methods=['GET', 'POST'])
+@login_required
 def modifier_aliment(id):
     aliment_courant = Aliment.get_by_id(id)
     return render_template('aliment/modifier_aliment.html', aliment=aliment_courant)
 
 @app.route('/modifier_aliment_post/<int:id>', methods=['GET', 'POST'])
+@login_required
 def modifier_aliment_post(id):
     aliment_courant = Aliment.get_by_id(id)
     if request.method == 'POST':
@@ -109,12 +114,14 @@ def modifier_aliment_post(id):
     return render_template('aliment/modifier_aliment.html', aliment=aliment_courant)
 
 @app.route('/supprimer_aliment/<int:id>', methods=['GET', 'POST'])
+@login_required
 def supprimer_aliment(id):
     Aliment.get_by_id(id).delete()
     db.session.commit()
     return redirect(url_for('controllers.aliments'))
 
 @app.route('/valider_aliment/<int:id>', methods=['GET', 'POST'])
+@login_required
 def valider_aliment(id):
     aliment_courant = Aliment.get_by_id(id)
     aliment_courant.valide = 1
@@ -122,6 +129,7 @@ def valider_aliment(id):
     return redirect(url_for('controllers.aliments'))
 
 @app.route('/invalider_aliment/<int:id>', methods=['GET', 'POST'])
+@login_required
 def invalider_aliment(id):
     aliment_courant = Aliment.get_by_id(id)
     aliment_courant.valide = 0
@@ -131,6 +139,7 @@ def invalider_aliment(id):
 # ----------------- Export aliments ----------------- #
 
 @app.route('/export_csv_aliment', methods=['GET', 'POST'])
+@login_required
 def export_csv_aliment():
     aliments = Aliment.get_all()
     csv = "titre,kcal,proteines,glucides,lipides,categorie,photo,description,unite\n"
@@ -145,6 +154,7 @@ def export_csv_aliment():
 # ----------------- Import aliments ----------------- #
 
 @app.route('/importer_csv_aliment', methods=['POST'])
+@login_required
 def importer_csv_aliment():
     fichier = request.files['fichier_aliment']
     if fichier.filename.endswith('.csv'):

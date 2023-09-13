@@ -1,56 +1,40 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+{% set page = 'signup' %}
+
+{% set place = ["signup"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
 <link rel="stylesheet" href="{{ root }}{{ url_for('static', filename='css/pages.css') }}">
 
-<div class="content">
-    <div class="column is-4 is-offset-4">
-        <h3 class="title">Sign Up</h3>
-        <div class="box">
-            <form action="{{ url_for('controllers.signup_utilisateur') }}" method="POST">
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="email" name="mail" placeholder="Email" autofocus="">
-                    </div>
+<div class="container">
+    <div class="row d-flex justify-content-center login_signup">
+        <div class="col-md-6 col-xl-4">
+            <div class="card">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <h3 class="mb-3">Inscription</h3>
+                    <form class="text-center" action="{{ url_for('controllers.signup_utilisateur') }}" method="POST">
+                        <div class="mb-3">
+                            <input type="email" class="form-control form-control-lg" name="mail" placeholder="Email*">
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control form-control-lg" name="mdp" placeholder="Mot de passe*">
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control form-control-lg" name="confirmation" placeholder="Confirmer mot de passe*">
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary btn-lg d-block w-100" type="submit">S'inscrire</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="text" name="nom" placeholder="Nom" autofocus="">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="text" name="prenom" placeholder="Prenom" autofocus="">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="password" name="mdp" placeholder="Password">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="number" name="age" placeholder="Age">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="number" name="taille" placeholder="Taille">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="number" name="poids" placeholder="Poids">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="text" name="sexe" placeholder="Sexe">
-                    </div>
-                </div>
-                <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+    
+
 {% endblock %}

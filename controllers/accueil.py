@@ -4,12 +4,15 @@ from models.Diete import Diete
 from flask import redirect, url_for
 from setup_sql import db
 import os
+from flask_login import login_required, current_user
 
 from controllers import app
 
-@app.route('/')
+@app.route('/accueil')
+@login_required
 def accueil():
-    utilisateur_courrant = Utilisateur.get_by_id(1)
+    utilisateur_courrant = current_user
+    print(utilisateur_courrant.nom, utilisateur_courrant.prenom, utilisateur_courrant.mail)
     if utilisateur_courrant is not None:
         if utilisateur_courrant.diete is not None:
             diet = Diete.get_by_id(utilisateur_courrant.diete)

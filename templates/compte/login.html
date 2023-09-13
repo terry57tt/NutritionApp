@@ -1,34 +1,40 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+{% set page = 'login' %}
+
+{% set place = ["login"] %}
+{% with breadcrumb=place %}
+    {% include "navbar.html" %}
+{% endwith %}
+
 <link rel="stylesheet" href="{{ root }}{{ url_for('static', filename='css/pages.css') }}">
 
-<div class="content">
-    <div class="column is-4 is-offset-4">
-        <h3 class="title">Login</h3>
-        <div class="box">
-            <form action="{{ url_for('controllers.login_utilisateur') }}" method="POST">
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
-                    </div>
+<div class="container">
+    <div class="row d-flex justify-content-center login_signup">
+        <div class="col-md-6 col-xl-4">
+            <div class="card">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <h3 class="mb-3">Se connecter</h3>
+                    <form class="text-center" action="{{ url_for('controllers.login_utilisateur') }}" method="POST">
+                        <div class="mb-3">
+                            <input type="email" class="form-control form-control-lg" name="mail" placeholder="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control form-control-lg" name="mdp" placeholder="Mot de passe" required>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary btn-lg d-block w-100" type="submit">Se connecter</button>
+                        </div>
+                        <div class="mb-3">
+                            <a class="text-decoration-none" href=""><p class="text-muted">Mot de passe oublié ?</p></a>
+                        </div>
+                    </form>
                 </div>
-    
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-large" type="password" name="password" placeholder="Your Password">
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="remember">
-                        Remember me
-                    </label>
-                </div>
-                <button class="button is-block is-info is-large is-fullwidth">Login</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
 
 {% endblock %}

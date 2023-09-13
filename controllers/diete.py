@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+from flask_login import login_required, current_user
 
 from controllers import app
 
@@ -22,6 +23,7 @@ def t():
     return render_template('aliment/test.html', diete=diete)
 
 @app.route('/get_filtered_data_dietes', methods=['POST'])
+@login_required
 def get_filtered_data_dietes():
     filter_value = request.form.get('filter', '').lower()
     page_number = int(request.form.get('page', 1))
@@ -43,6 +45,7 @@ def get_filtered_data_dietes():
     return jsonify(data=current_page_data, total_pages=total_pages)
 
 @app.route('/get_filtered_data', methods=['POST'])
+@login_required
 def get_filtered_data():
     filter_value = request.form.get('filter', '').lower()
     selected_categorie = request.form.get('selected_category', '')
@@ -69,27 +72,29 @@ def get_filtered_data():
 
 
 @app.route('/dietes')
+@login_required
 def dietes():
     dietes = Diete.get_all()
     current_date = date.today().isoformat()
-    utilisateur_courrant = Utilisateur.query.filter_by(id=1).first()
-    return render_template('diete/dietes.html', dietes=dietes, date=current_date, utilisateur=utilisateur_courrant)
+    return render_template('diete/dietes.html', dietes=dietes, date=current_date, utilisateur=current_user)
 
 @app.route('/ajouter_diete', methods=['GET', 'POST'])
+@login_required
 def ajouter_diete():
-    createur_id = 1
     titre = request.form['titre']
     date_today = datetime.now()
-    diet = Diete(titre_diete=titre, createur=createur_id, date=date_today)
+    diet = Diete(titre_diete=titre, createur=current_user.id, date=date_today)
     db.session.add(diet)
     db.session.commit()
     return redirect(url_for('controllers.creer_diete', id = diet.id))
 
 @app.route('/modifier_diete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def modifier_diete(id):
     return redirect(url_for('controllers.creer_diete', id = id))
 
 @app.route('/supprimer_diete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def supprimer_diete(id):
     diete_courante = Diete.get_by_id(id)
     portions_liees = diete_courante.portions_associees()
@@ -100,11 +105,14 @@ def supprimer_diete(id):
     return redirect(url_for('controllers.dietes'))
 
 @app.route('/voir_diete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def voir_diete(id):
     diet = Diete.get_by_id(id)
+
     return render_template('diete/detail_diete.html', root = default_root(), diete=diet)
 
 @app.route('/change_title/<int:id>/<string:title>', methods=['GET', 'POST'])
+@login_required
 def change_title(id, title):
     diet = Diete.get_by_id(id)
     diet.titre_diete = title
@@ -112,12 +120,14 @@ def change_title(id, title):
     return redirect(url_for('controllers.dietes'))
 
 @app.route('/changer_diete/<int:id_utilisateur>', methods=['GET', 'POST'])
+@login_required
 def changer_diete(id_utilisateur):
     utilisateur_courrant = Utilisateur.query.filter_by(id=id_utilisateur).first()
     dietes = Diete.get_all()
     return render_template('diete/changer_diete.html', utilisateur=utilisateur_courrant, dietes=dietes)
 
 @app.route('/choisir_diete/<int:id>/<int:id_utilisateur>', methods=['GET', 'POST'])
+@login_required
 def choisir_diete(id, id_utilisateur):
     utilisateur_courrant = Utilisateur.query.filter_by(id=id_utilisateur).first()
     utilisateur_courrant.diete = id
@@ -129,10 +139,10 @@ def default_root():
     return parsed_url.scheme + "://" + parsed_url.netloc
 
 @app.route('/print_diete_pdf/<int:id_diete>', methods=['GET', 'POST'])
+@login_required
 def print_diete_pdf(id_diete):
-    utilisateur_courrant = Utilisateur.query.filter_by(id=1).first()
     diet = Diete.get_by_id(id_diete)
-    out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
+    out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=current_user)
     return html_to_pdf(out)
 
 def html_to_pdf(html,filename='diete.pdf',download=False):
@@ -144,6 +154,7 @@ def html_to_pdf(html,filename='diete.pdf',download=False):
     return response
 
 @app.route('/creer_diete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def creer_diete(id):
     diete_courante = Diete.get_by_id(id)
     portions_repas = diete_courante.portions_associees()
@@ -152,6 +163,7 @@ def creer_diete(id):
     return render_template('diete/creer_diete.html', aliments=aliments, diete=diete_courante, portions_repas=portions_repas)
  
 @app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:label>', methods=['GET', 'POST'])
+@login_required
 def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
     
     nouvelle_portion = Portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion=label)
@@ -162,6 +174,7 @@ def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
     return redirect(url_for('controllers.creer_diete', id=id_diete))
 
 @app.route('/enlever_aliment_diete/<int:id_portion>/<int:id_diete>', methods=['GET', 'POST'])
+@login_required
 def enlever_aliment_diete(id_portion, id_diete):
     portion_courante = Portion.get_by_id(id_portion)    
 
@@ -173,6 +186,7 @@ def enlever_aliment_diete(id_portion, id_diete):
 # ----------------- Export dietes ----------------- #
 
 @app.route('/export_csv/<int:id_diete>', methods=['GET', 'POST'])
+@login_required
 def export_csv(id_diete):
     diet = Diete.get_by_id(id_diete)
     portions = diet.portions_associees()
@@ -188,6 +202,7 @@ def export_csv(id_diete):
 # ----------------- Import dietes ----------------- #
 
 @app.route('/importer_csv', methods=['POST'])
+@login_required
 def importer_csv():
     fichier = request.files['fichier_csv']
     if fichier.filename.endswith('.csv'):
@@ -218,15 +233,15 @@ def importer_csv():
     return redirect(url_for('controllers.dietes'))
 
 @app.route('/envoyer_mail/<int:id_diete>', methods=['GET', 'POST'])
+@login_required
 def envoyer_mail(id_diete):
-    utilisateur_courrant = Utilisateur.query.filter_by(id=1).first()
     diet = Diete.get_by_id(id_diete)
-    out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=utilisateur_courrant)
+    out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=current_user)
     pdf = pdfkit.from_string(out, False)
 
     sender_email = 'terrynutritionapp@gmail.com'
     sender_password = 'qqfpvggfqadsuxkx'
-    receiver_email = utilisateur_courrant.mail
+    receiver_email = current_user.mail
 
     msg = MIMEMultipart()
     msg['From'] = sender_email

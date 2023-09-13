@@ -57,9 +57,9 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="input-group mb-3">
-                        <input type="text" id="mail" name="mail" class="form-control" placeholder="Mail" value="{{ utilisateur.mail_partie1() }}" required>
+                        <input type="text" id="mail" name="mail" class="form-control" placeholder="Mail" value="{{ utilisateur.mail_partie1() }}" readonly>
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" id="boite_mail" name="boite_mail" class="form-control" placeholder="Boite mail" value="{{ utilisateur.mail_partie2() }}" required>
+                        <input type="text" id="boite_mail" name="boite_mail" class="form-control" placeholder="Boite mail" value="{{ utilisateur.mail_partie2() }}" readonly>
                     </div>
                 </div>
             </div>
@@ -120,53 +120,56 @@
   </div>
 <!-- Fenêtre de modification de l'utilisateur -->
 
+{% if utilisateur.poids and utilisateur.taille %}
 <div class="imc_window bg-light">
     <div class="container">
         <div class="row">
             <div class="col-md-12 mb-3">
-                {% set min = 0 %}
-                {% set max = 40 %}
 
-                {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
-                {% set imc_progress = (imc / max) * 100 %}
+                    {% set min = 0 %}
+                    {% set max = 40 %}
 
-                <p class="text-center">Votre IMC est de {{ imc }}</p>
-                    {% if imc < 18.5 %}
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{ imc }}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
-                    </div>
-                    {% elif imc < 25 %}
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
-                    </div>
-                    {% elif imc < 30 %}
-                    <div class="progress">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
-                    </div>
-                    {% elif imc < 35 %}
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
-                    </div>
-                    {% elif imc > 40 %}
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
-                    </div>
-                    {% else %}
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
-                    </div>
-                    {% endif %}
+                    {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
+                    {% set imc_progress = (imc / max) * 100 %}
 
-                    <div class="progress" style="margin-top: 0.5cm;">
-                        <div class="progress-bar" role="progressbar" style="width: {{ (18.5/max)*100 }}%" aria-valuenow="18.5" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ (6.5 / max)*100 }}%" aria-valuenow="25" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="30" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="35" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
-                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+                    <p class="text-center">Votre IMC est de {{ imc }}</p>
+                        {% if imc < 18.5 %}
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{ imc }}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
+                        </div>
+                        {% elif imc < 25 %}
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
+                        </div>
+                        {% elif imc < 30 %}
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
+                        </div>
+                        {% elif imc < 35 %}
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
+                        </div>
+                        {% elif imc > 40 %}
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+                        </div>
+                        {% else %}
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{imc_progress}}%" aria-valuenow="{{imc}}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="progress" style="margin-top: 0.5cm;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ (18.5/max)*100 }}%" aria-valuenow="18.5" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Maigreur</div>
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ (6.5 / max)*100 }}%" aria-valuenow="25" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Normal</div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="30" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Surpoids</div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="35" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité modérée</div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ (5 / max)*100 }}%" aria-valuenow="40" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}">Obésité sévère</div>
+                        </div>
                     </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+{% endif %}
 
 {% endblock %}

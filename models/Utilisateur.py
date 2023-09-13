@@ -1,5 +1,7 @@
 from setup_sql import db
 from models.Diete import Diete
+from flask_login import login_manager
+from werkzeug.security import generate_password_hash
 
 class Utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,6 +16,28 @@ class Utilisateur(db.Model):
     diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
 
     diete_obj = db.relationship('Diete', backref=db.backref('utilisateurs'), foreign_keys=[diete])
+
+    def __init__(self, nom="", mail=None, mdp=None, prenom="", age="", taille="", poids="", sexe="homme"):
+        self.nom = nom
+        self.mail = mail
+        self.mdp = generate_password_hash(mdp)
+        self.prenom = prenom
+        self.age = age
+        self.taille = taille
+        self.poids = poids
+        self.sexe = sexe
+
+    def get_id(self):
+        return self.id
+    
+    def is_active(self):
+        return True
+    
+    def is_authenticated(self):
+        return True
+    
+    def is_anonymous(self):
+        return False
 
     @staticmethod
     def get_by_id(id):
