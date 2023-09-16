@@ -12,7 +12,6 @@ from controllers import app
 @login_required
 def accueil():
     utilisateur_courrant = current_user
-    print(utilisateur_courrant.nom, utilisateur_courrant.prenom, utilisateur_courrant.mail)
     if utilisateur_courrant is not None:
         if utilisateur_courrant.diete is not None:
             diet = Diete.get_by_id(utilisateur_courrant.diete)

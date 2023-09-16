@@ -2,6 +2,9 @@ from setup_sql import db
 from models.Diete import Diete
 from flask_login import login_manager
 from werkzeug.security import generate_password_hash
+import datetime
+import secrets
+import hashlib
 
 class Utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,10 +17,12 @@ class Utilisateur(db.Model):
     poids = db.Column(db.Integer, nullable=True)
     sexe = db.Column(db.String(255), nullable=True)
     diete = db.Column(db.Integer, db.ForeignKey('diete.id'))
+    reset_token = db.Column(db.String(255), nullable=True)
+    reset_token_expiration = db.Column(db.DateTime, nullable=True)
 
     diete_obj = db.relationship('Diete', backref=db.backref('utilisateurs'), foreign_keys=[diete])
 
-    def __init__(self, nom="", mail=None, mdp=None, prenom="", age="", taille="", poids="", sexe="homme"):
+    def __init__(self, nom="", mail=None, mdp=None, prenom="", age="", taille="", poids="", sexe="homme", diete=None, reset_token=None, reset_token_expiration=None):
         self.nom = nom
         self.mail = mail
         self.mdp = generate_password_hash(mdp)
@@ -26,7 +31,31 @@ class Utilisateur(db.Model):
         self.taille = taille
         self.poids = poids
         self.sexe = sexe
+        self.diete = diete
+        self.reset_token = reset_token
+        self.reset_token_expiration = reset_token_expiration
 
+    def get_reset_token(self, expiration_minutes=30):
+        token = secrets.token_urlsafe(32)
+        self.reset_token = hashlib.sha256(token.encode('utf-8')).hexdigest()
+        self.reset_token_expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=expiration_minutes)
+        return token
+    
+    def filter_by_token(token):
+        test_token = hashlib.sha256(token.encode('utf-8')).hexdigest()
+        return Utilisateur.query.filter_by(reset_token=test_token).first()
+    
+    def get_token(self):
+        return self.reset_token
+    
+    def is_reset_token_valid(self):
+        return self.reset_token_expiration is not None and datetime.datetime.utcnow() < self.reset_token_expiration
+
+    def reset_password(self, new_password):
+        self.mdp = generate_password_hash(new_password)
+        self.reset_token = None
+        self.reset_token_expiration = None
+        
     def get_id(self):
         return self.id
     

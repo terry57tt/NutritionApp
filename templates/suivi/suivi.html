@@ -11,23 +11,22 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 <title>{% block title %} Suivi {% endblock %}</title>
 
-
 <div class="suivi_window bg-light">
     <div class="container">
         <div class="row">
             <div class="col-md-7 mb-3">
-                <form method="POST" action="{{ url_for('controllers.modifier_utilisateur', id=utilisateur.id) }}" id="suiviForm" enctype="multipart/form-data">
+                <form method="POST" action="{{ url_for('controllers.ajouter_suivi') }}" id="suiviForm" enctype="multipart/form-data">
                     <div class="form-group">
-                        <input type="date" class="form-control" id="dateInput" value="{{ today }}">
+                        <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required placeholder="Date*">
                     </div>
                     <div class="input-group separation">
                         <span class="input-group-text" id="poids">Poids</span>
-                        <input type="number" id="poids" name="poids" class="form-control" placeholder="Poids du jour" required>
+                        <input type="number" step="0.1" id="poids" name="poids" class="form-control" placeholder="Poids du jour*" required>
                         <span class="input-group-text">kg</span>
                     </div>
                     <div class="input-group separation">
                         <span class="input-group-text" id="poids">Taux de Masse Grasse</span>
-                        <input type="number" id="taux" name="taux" class="form-control" placeholder="Taux" min="0" max="100" required>
+                        <input type="number" id="taux" name="taux_masse_grasse" class="form-control" placeholder="Taux" min="0" max="100">
                         <span class="input-group-text">%</span>
                     </div>
 
@@ -35,14 +34,14 @@
                         <div class="col-md-6 mb-3">
                             <div class="input-group">
                                 <span class="input-group-text" id="bras">Bras</span>
-                                <input type="number" id="bras" name="bras" class="form-control" placeholder="Taille" required>
+                                <input type="number" id="bras" name="bras" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="input-group">
                                 <span class="input-group-text" id="epaules">Épaules</span>
-                                <input type="number" id="epaules" name="epaules" class="form-control" placeholder="Taille" required>
+                                <input type="number" id="epaules" name="epaules" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
@@ -52,14 +51,14 @@
                         <div class="col-md-6 mb-3">
                             <div class="input-group">
                                 <span class="input-group-text" id="poitrine">Poitrine</span>
-                                <input type="number" id="poitrine" name="poitrine" class="form-control" placeholder="Taille" required>
+                                <input type="number" id="poitrine" name="poitrine" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="input-group">
-                                <span class="input-group-text" id="taille">Taille</span>
-                                <input type="number" id="taille" name="taille" class="form-control" placeholder="Taille" required>
+                                <span class="input-group-text" id="tour_taille">Tour de taille</span>
+                                <input type="number" id="tour_taille" name="tour_taille" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
@@ -69,14 +68,14 @@
                         <div class="col-md-6">
                             <div class="input-group">
                                 <span class="input-group-text" id="cuisses">Cuisses</span>
-                                <input type="number" id="cuisses" name="cuisses" class="form-control" placeholder="Taille" required>
+                                <input type="number" id="cuisses" name="cuisses" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="input-group">
                                 <span class="input-group-text" id="mollets">Mollets</span>
-                                <input type="number" id="mollets" name="mollets" class="form-control" placeholder="Taille" required>
+                                <input type="number" id="mollets" name="mollets" class="form-control" placeholder="Taille">
                                 <span class="input-group-text">cm</span>
                             </div>
                         </div>
@@ -101,10 +100,28 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 mb-3">
-                <img src="{{ url_for('static', filename='images/graph_exemple.png') }}" alt="imc" height="200px" width="100%">
+                <canvas id="line_chart" aria-label="Line Chart" role="img"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<table id="suivi_table" class="not_displayed">
+        {% for suivi in suivis %}
+        <tr>
+            <td>{{ suivi.date }}</td>
+            <td>{{ suivi.poids }}</td>
+            <td>{{ suivi.taux_masse_grasse }}</td>
+            <td>{{ suivi.bras }}</td>
+            <td>{{ suivi.epaules }}</td>
+            <td>{{ suivi.poitrine }}</td>
+            <td>{{ suivi.tour_taille }}</td>
+            <td>{{ suivi.cuisses }}</td>
+            <td>{{ suivi.mollets }}</td>
+        </tr>
+        {% endfor %}
+</table>
+
+<script src="{{ url_for('static', filename='js/suivi.js') }}"></script>
 
 {% endblock %}

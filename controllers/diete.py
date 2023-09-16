@@ -17,11 +17,6 @@ from flask_login import login_required, current_user
 
 from controllers import app
 
-@app.route('/t', methods=['GET', 'POST'])
-def t():
-    diete = Diete.get_by_id(1)
-    return render_template('aliment/test.html', diete=diete)
-
 @app.route('/get_filtered_data_dietes', methods=['POST'])
 @login_required
 def get_filtered_data_dietes():
@@ -139,7 +134,6 @@ def default_root():
     return parsed_url.scheme + "://" + parsed_url.netloc
 
 @app.route('/print_diete_pdf/<int:id_diete>', methods=['GET', 'POST'])
-@login_required
 def print_diete_pdf(id_diete):
     diet = Diete.get_by_id(id_diete)
     out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=current_user)
@@ -147,7 +141,7 @@ def print_diete_pdf(id_diete):
 
 def html_to_pdf(html,filename='diete.pdf',download=False):
     css = ['static/css/pages.css']
-    pdf = pdfkit.from_string(html, css=css)
+    pdf = pdfkit.from_string(html,css=css)
     response = Response(pdf, mimetype='application/pdf')
     if download :
         response.headers.set('Content-Disposition', f'attachment; filename={filename}')
@@ -162,13 +156,19 @@ def creer_diete(id):
     aliments = Aliment.get_all()
     return render_template('diete/creer_diete.html', aliments=aliments, diete=diete_courante, portions_repas=portions_repas)
  
-@app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:label>', methods=['GET', 'POST'])
+@app.route('/ajouter_aliment_diete/<int:id_aliment>/<int:id_diete>/<int:quantite>/<int:labels>', methods=['GET', 'POST'])
 @login_required
-def ajouter_aliment_diete(id_aliment, id_diete, quantite, label):
+def ajouter_aliment_diete(id_aliment, id_diete, quantite, labels):
+
+    label_tab = []
+    while labels > 0:
+        label_tab.append(labels % 10)
+        labels = labels // 10
     
-    nouvelle_portion = Portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion=label)
-    
-    db.session.add(nouvelle_portion)
+    for label in label_tab:
+        nouvelle_portion = Portion(diete=id_diete, aliment=id_aliment, nombre=quantite, label_portion=label)
+        db.session.add(nouvelle_portion)
+        
     db.session.commit()
 
     return redirect(url_for('controllers.creer_diete', id=id_diete))
@@ -233,7 +233,6 @@ def importer_csv():
     return redirect(url_for('controllers.dietes'))
 
 @app.route('/envoyer_mail/<int:id_diete>', methods=['GET', 'POST'])
-@login_required
 def envoyer_mail(id_diete):
     diet = Diete.get_by_id(id_diete)
     out = render_template("diete/diete_pdf.html", root = default_root(), diete=diet, navbar=False, utilisateur=current_user)

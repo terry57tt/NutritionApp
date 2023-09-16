@@ -1,11 +1,15 @@
-from flask import render_template, request, redirect, url_for, flash, Response
+from flask import render_template, request, redirect, url_for, flash, current_app
 from models.Utilisateur import Utilisateur
 from setup_sql import db
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
-
-from controllers import app
+from threading import Thread
+from flask_mail import Message
 from flask import Blueprint
+from . import app
+import os
+from flask_mail import Mail
+
 auth = Blueprint('auth', __name__)
 
 @app.route('/')
@@ -73,3 +77,61 @@ def is_invalid_password(mdp):
     if mdp == '' or mdp is None or len(mdp) < 8:
         return True
     return False
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        mail = request.form['mail']
+        user = Utilisateur.query.filter_by(mail=mail).first()
+        if user:
+            token = user.get_reset_token()
+            db.session.commit()
+
+            msg = Message()
+            msg.subject = 'Réinitialisation du mot de passe'
+            msg.sender = 'terry57tt@gmail.com'
+            msg.recipients = ['terry57tt@gmail.com']
+            msg.html = render_template('mail/reset_password.html', user=user, token=token)
+            email = Mail(current_app)
+            email.send(msg)
+
+            flash('Un mail vous a été envoyé pour réinitialiser votre mot de passe.', 'success')
+            return redirect(url_for('controllers.login'))
+        else:
+            flash('Adresse mail inconnue.', 'danger')
+    return redirect(url_for('controllers.login'))
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = Utilisateur.filter_by_token(token)
+    if user and user.is_reset_token_valid():
+        return render_template('compte/new_password.html', token=token)
+    else:
+        flash('Lien de réinitialisation invalide ou expiré.', 'danger')
+        return redirect(url_for('controllers.login'))
+    
+@app.route('/new_password/<token>', methods=['GET', 'POST'])
+def new_password(token):
+    user = Utilisateur.filter_by_token(token)
+    if user and user.is_reset_token_valid():
+        if request.method == 'POST':
+            mdp = request.form['mdp']
+            confirmation_mdp = request.form['confirmation']
+            
+            if is_invalid_password(mdp):
+                flash('Mot de passe invalide', 'danger')
+                return redirect(url_for('controllers.reset_password', token=token))
+            
+            if mdp != confirmation_mdp:
+                flash('Les mots de passe ne correspondent pas', 'danger')
+                return redirect(url_for('controllers.reset_password', token=token))
+
+            user.reset_password(mdp)
+            db.session.commit()
+
+            flash('Mot de passe réinitialisé avec succès !', 'success')
+            return redirect(url_for('controllers.login'))
+        return redirect(url_for('controllers.new_password', token=token))
+    else:
+        flash('Lien de réinitialisation invalide ou expiré.', 'danger')
+        return redirect(url_for('controllers.login'))

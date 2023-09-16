@@ -8,8 +8,6 @@
     {% include "navbar.html" %}
 {% endwith %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
-
 <script>
   {% if utilisateur.age and utilisateur.poids and utilisateur.taille %}
     {% if utilisateur.sexe == 'homme' %}
@@ -275,7 +273,6 @@
     </div>
   </div>
 </div>
-
 
 <script src="{{ url_for('static', filename='js/accueil.js') }}"></script>
 

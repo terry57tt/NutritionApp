@@ -2,8 +2,9 @@ import os
 import controllers
 from flask import Flask
 from setup_sql import db
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager
 from models.Utilisateur import Utilisateur
+from flask_mail import Mail
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'static/upload/'
@@ -35,6 +36,15 @@ login_manager.login_view = 'controllers.login'
 login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
 login_manager.login_message_category = 'info'
 
+# Setup Mail Configurations
+flask_serv_intern.config['MAIL_SERVER'] = 'smtp.gmail.com'
+flask_serv_intern.config['MAIL_PORT'] = 465
+flask_serv_intern.config['MAIL_USE_SSL'] = True
+flask_serv_intern.config['MAIL_USERNAME'] = 'terrynutritionapp@gmail.com'
+flask_serv_intern.config['MAIL_PASSWORD'] = 'qqfpvggfqadsuxkx'
+mail = Mail(flask_serv_intern)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
@@ -44,5 +54,3 @@ with flask_serv_intern.app_context():
 
 if __name__ == "__main__":
     flask_serv_intern.run(debug=True)
-
-

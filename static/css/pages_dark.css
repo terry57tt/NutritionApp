@@ -1,3 +1,7 @@
+body{
+    background-color: #333;
+}
+
 .content{
     padding: 0cm 6cm 0cm 6cm;
 }
@@ -53,10 +57,10 @@
 }
 
 .suivi_window{
-    width: 90%;
+    width: 80%;
     margin: 30px auto; /* center element */
     padding: 30px;
-    max-width: 1200px;
+    max-width: 900px;
     border-radius: 10px;
 }
 
@@ -332,8 +336,4 @@
 .login_signup{
     margin: 30px auto;
     padding: 20px;
-}
-
-.not_displayed{
-    display: none;
 }

@@ -3,12 +3,52 @@ $(function () {
 })
 
 function ajouterQuantite(alimentId,idDiete) {
+  var str_repas = "";
+
   var quantiteInput = document.getElementById("quantite" + alimentId);
   var quantite = quantiteInput.value;
-  var repasInput = document.getElementById("repas" + alimentId);
-  var repas = repasInput.value;
-  
-    var url = "http://127.0.0.1:5000/ajouter_aliment_diete/" + alimentId + "/" + idDiete + "/" + quantite + "/" + repas;
+
+  if(quantite == ""){
+    alert("Veuillez entrer une quantité.");
+    return;
+  }
+
+  const matin = document.getElementById('matinCheckbox' + alimentId);
+  const col_matin = document.getElementById('col_matinCheckbox'+ alimentId);
+  const midi = document.getElementById('midiCheckbox'+ alimentId);
+  const col_aprem = document.getElementById('col_apremCheckbox'+ alimentId);
+  const soir = document.getElementById('soirCheckbox'+ alimentId);
+  const col_soir = document.getElementById('col_soirCheckbox'+ alimentId);
+
+  if(matin.checked){
+    str_repas += matin.value;
+  }
+  if(col_matin.checked){
+    str_repas += col_matin.value;
+  }
+  if(midi.checked){
+    str_repas += midi.value;
+  }
+  if(col_aprem.checked){
+    str_repas += col_aprem.value;
+  }
+  if(soir.checked){
+    str_repas += soir.value;
+  }
+  if(col_soir.checked){
+    str_repas += col_soir.value;
+  }
+
+  if(!matin.checked && !col_matin.checked && !midi.checked && !col_aprem.checked && !soir.checked && !col_soir.checked){
+    alert("Veuillez sélectionner au moins un repas.");
+    return;
+  }
+
+  ajouterQuantiteDiete(alimentId,idDiete,quantite,str_repas);
+}
+
+function ajouterQuantiteDiete(alimentId,idDiete,quantite,str_repas) {
+  var url = "http://127.0.0.1:5000/ajouter_aliment_diete/" + alimentId + "/" + idDiete + "/" + quantite + "/" + str_repas;
     
     $.ajax({
       url: url,
@@ -171,15 +211,46 @@ function fenetre_modale(item){
                     </div>
 
                   </div>
-                  <label for="repas${item.id}"></label>
-                  <select id="repas${item.id}" class="form-control" required>
-                    <option value="1">Matin</option>
-                    <option value="2">Collation Matin</option>
-                    <option value="3">Midi</option>
-                    <option value="4">Collation Après-midi</option>
-                    <option value="5">Soir</option>
-                    <option value="6">Collation Soir</option>
-                  </select>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-check text-left mt-2">
+                        <input type="checkbox" class="form-check-input" id="matinCheckbox${item.id}" name="matinCheckbox${item.id}" value="1">
+                        <label class="form-check-label" for="matinCheckbox${item.id}">Matin</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check text-left mt-2">
+                        <input type="checkbox" class="form-check-input" id="col_matinCheckbox${item.id}" name="col_matinCheckbox${item.id}" value="2">
+                        <label class="form-check-label" for="col_matinCheckbox${item.id}">Col. Matin</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check text-left mt-2">
+                        <input type="checkbox" class="form-check-input" id="midiCheckbox${item.id}" name="midiCheckbox${item.id}" value="3">
+                        <label class="form-check-label" for="midiCheckbox${item.id}">Midi</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-check text-left">
+                        <input type="checkbox" class="form-check-input" id="col_apremCheckbox${item.id}" name="col_apremCheckbox${item.id}" value="4">
+                        <label class="form-check-label" for="col_apremCheckbox${item.id}">Après-midi</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check text-left">
+                        <input type="checkbox" class="form-check-input" id="soirCheckbox${item.id}" name="soirCheckbox${item.id}" value="5">
+                        <label class="form-check-label" for="soirCheckbox${item.id}">Soir</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 text-left">
+                      <div class="form-check text-left">
+                        <input type="checkbox" class="form-check-input" id="col_soirCheckbox${item.id}" name="col_soirCheckbox${item.id}" value="6">
+                        <label class="form-check-label" for="col_soirCheckbox${item.id}">Col. Soir</label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

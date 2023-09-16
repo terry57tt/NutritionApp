@@ -9,4 +9,5 @@ from .auth import *
 from .diete import *
 from .reglages import *
 from .suivi import *
+from .admin import *
 

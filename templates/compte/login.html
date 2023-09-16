@@ -27,11 +27,35 @@
                             <button class="btn btn-primary btn-lg d-block w-100" type="submit">Se connecter</button>
                         </div>
                         <div class="mb-3">
-                            <a class="text-decoration-none" href=""><p class="text-muted">Mot de passe oublié ?</p></a>
-                        </div>
+                            <!-- Change from <button> to <a> -->
+                            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modal_mdp_oublie"><p class="text-muted">Mot de passe oublié ?</p></a>
+                        </div>                        
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal mot de passe oublié -->
+<div class="modal fade" id="modal_mdp_oublie" tabindex="-1" aria-labelledby="modal_mdp_oublie_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_mdp_oublie_label">Mot de passe oublié ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body text-center">
+                <form action="{{ url_for('controllers.forgot_password') }}" method="POST">
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="mail" name="mail" placeholder="Entrez votre adresse e-mail*" required>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button class="btn btn-primary" type="submit">Envoyer</button>
+                    </div>
+                </form>
+            </div> 
         </div>
     </div>
 </div>

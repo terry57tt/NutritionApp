@@ -22,6 +22,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" id="theme_sheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages_dark.css') }}" disabled id="theme_sheet_dark">
 </head>
 <body>
     {% block content %}
