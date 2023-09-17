@@ -196,13 +196,17 @@
 .widget_numbers{
     font-family: 'Mulish';
     font-weight: 900;
-    font-weight: normal;
 
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
+
+    padding: 0;
+}
+
+.card_info{
+    font-size: 24px;
 }
 
 .info-little{

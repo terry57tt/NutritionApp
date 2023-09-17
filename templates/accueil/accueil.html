@@ -60,23 +60,20 @@
                 <h4 class="card-title text-center">Profil</h4>
                 <div class="card-2-2">
                   <div class="card-sub-element widget_numbers color-yellow">
-                      <h3> {{ utilisateur.age }} ans </h3>
-                      <span class="info-little"> {{ utilisateur.prenom }} {{ utilisateur.nom }}</span>
+                      <h3 class="card_info"> {{ utilisateur.age }} ans </h3>
                   </div>
                   <div class="card-sub-element widget_numbers color-blue">
-                      <h3> {{ utilisateur.taille }} cm </h3>
-                      <span class="info-little"> {{ utilisateur.sexe }} </span>
+                      <h3 class="card_info"> {{ utilisateur.taille }} cm </h3>
                   </div> 
                   <div class="card-sub-element widget_numbers color-red">
-                      <h3> {{ utilisateur.poids }} kg </h3>
-                      
-                        {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
-                      <span class="info-little"> IMC = {{ imc }} </span>
-                  </div> 
-                  <div class="card-sub-element widget_numbers color-green">
-                      <span class="info-little">Protéines : {{ (utilisateur.poids * 2.2)|round|int }} g </span>
+                      <h3 class="card_info"> {{ utilisateur.poids }} kg </h3>
+                    </div> 
+                    <div class="card-sub-element widget_numbers color-green">
+                    {% set imc = (utilisateur.poids / ((utilisateur.taille/100) * (utilisateur.taille/100)))|round(1) %}
+                      <h3 class="card_info">{{ imc }} imc</h3>
+                      <!--span class="info-little">Protéines : {{ (utilisateur.poids * 2.2)|round|int }} g </span>
                       <span class="info-little">Lipides : {{ (utilisateur.poids * 1)|round|int }} g </span>
-                      <span class="info-little">Sel : 6 g </span>
+                      <span class="info-little">Sel : 6 g </span-->
                   </div>
                 </div> 
               </div>

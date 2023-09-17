@@ -26,25 +26,25 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item {% if page == 'accueil' %}active{% endif %}">
-        <a href="{{url_for('controllers.accueil')}}" class="nav-link">Accueil</a>
+        <a href="{{url_for('controllers.accueil')}}" class="nav-link text-center">Accueil</a>
         </li>
         <li class="nav-item {% if page == 'dietes' %}active{% endif %}">
-          <a href="{{url_for('controllers.dietes')}}" class="nav-link">Diètes</a>
+          <a href="{{url_for('controllers.dietes')}}" class="nav-link text-center">Diètes</a>
         </li>
         <li class="nav-item {% if page == 'aliments' %}active{% endif %}">
-          <a href="{{url_for('controllers.aliments')}}" class="nav-link">Aliments</a>
+          <a href="{{url_for('controllers.aliments')}}" class="nav-link text-center">Aliments</a>
         </li>
         <li class="nav-item {% if page == 'suivi' %}active{% endif %}">
-          <a href="{{url_for('controllers.suivi')}}" class="nav-link">Suivi</a>
+          <a href="{{url_for('controllers.suivi')}}" class="nav-link text-center">Suivi</a>
         </li>
         <li class="nav-item {% if page == 'reglages' %}active{% endif %}">
-          <a href="{{url_for('controllers.reglages')}}" class="nav-link">Réglages</a>
+          <a href="{{url_for('controllers.reglages')}}" class="nav-link text-center">Réglages</a>
         </li>
         <li class="nav-item">
-          <a href="{{url_for('controllers.logout')}}" class="nav-link">Déconnexion</a>
+          <a href="{{url_for('controllers.logout')}}" class="nav-link text-center">Déconnexion</a>
         </li>
-        <li class="nav-item">
-          <button id="darkModeToggle" type="button" class="btn btn-outline-primary">Night mode</button>
+        <li class="nav-item text-center">
+          <i id="darkModeToggle" class="nav-link fa fa-moon-o"></i>
         </li>
       </ul>
     </div>

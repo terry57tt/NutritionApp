@@ -5,6 +5,7 @@ from setup_sql import db
 from flask_login import LoginManager
 from models.Utilisateur import Utilisateur
 from flask_mail import Mail
+from flask_session import Session
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'static/upload/'
@@ -44,6 +45,10 @@ flask_serv_intern.config['MAIL_USERNAME'] = 'terrynutritionapp@gmail.com'
 flask_serv_intern.config['MAIL_PASSWORD'] = 'qqfpvggfqadsuxkx'
 mail = Mail(flask_serv_intern)
 
+# Setup Cookies Configurations
+flask_serv_intern.config['COOKIES_SECRET_KEY'] = 'secret_key'
+flask_serv_intern.config['COOKIES_EXPIRE_TIME'] = 60 * 60 * 24 * 7
+Session(flask_serv_intern)
 
 @login_manager.user_loader
 def load_user(user_id):
