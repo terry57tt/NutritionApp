@@ -70,10 +70,10 @@
 }
 
 .diete_window{
-    width: 80%;
+    width: 95%;
     margin: 30px auto; /* center element */
     padding: 30px;
-    max-width: 1200px;
+    max-width: 1600px;
     border-radius: 10px;
 }
 

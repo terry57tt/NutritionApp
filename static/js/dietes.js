@@ -1,201 +1,501 @@
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+// ------------------ BEGIN Update on the fly ------------------------------
+function updateQuantity(portionId, newQuantity) {
+    // Vérifier si la nouvelle quantité est un nombre valide
+    if (isNaN(newQuantity) || newQuantity < 0) {
+        console.log("Invalid quantity");
+        return;
+    }
 
-function ajouterQuantite(alimentId,idDiete) {
-  var str_repas = "";
+    // Convertir la nouvelle quantité en entier et l'arrondir
+    const newQuantityInt = Math.round(parseInt(newQuantity));
 
-  var quantiteInput = document.getElementById("quantite" + alimentId);
-  var quantite = quantiteInput.value;
+    // Utiliser une URL relative ou absolue dynamique
+    const url = window.location.origin + "/update_quantity/" + portionId + "/" + newQuantityInt;
 
-  if(quantite == ""){
-    alert("Veuillez entrer une quantité.");
-    return;
-  }
-
-  const matin = document.getElementById('matinCheckbox' + alimentId);
-  const col_matin = document.getElementById('col_matinCheckbox'+ alimentId);
-  const midi = document.getElementById('midiCheckbox'+ alimentId);
-  const col_aprem = document.getElementById('col_apremCheckbox'+ alimentId);
-  const soir = document.getElementById('soirCheckbox'+ alimentId);
-  const col_soir = document.getElementById('col_soirCheckbox'+ alimentId);
-
-  if(matin.checked){
-    str_repas += matin.value;
-  }
-  if(col_matin.checked){
-    str_repas += col_matin.value;
-  }
-  if(midi.checked){
-    str_repas += midi.value;
-  }
-  if(col_aprem.checked){
-    str_repas += col_aprem.value;
-  }
-  if(soir.checked){
-    str_repas += soir.value;
-  }
-  if(col_soir.checked){
-    str_repas += col_soir.value;
-  }
-
-  if(!matin.checked && !col_matin.checked && !midi.checked && !col_aprem.checked && !soir.checked && !col_soir.checked){
-    alert("Veuillez sélectionner au moins un repas.");
-    return;
-  }
-
-  ajouterQuantiteDiete(alimentId,idDiete,quantite,str_repas);
+    // Utiliser la méthode HTTP PUT pour mettre à jour la ressource
+    $.ajax({
+        url: url,
+        type: "POST",
+        success: function (response) {
+            // Mettre à jour l'interface utilisateur avec la nouvelle quantité
+            // au lieu de recharger toute la page
+            window.location.reload();
+            $('#portion_' + portionId + '_quantity').text(newQuantityInt);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Afficher un message d'erreur convivial à l'utilisateur
+            alert("An error occurred: " + textStatus);
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
 }
 
-function ajouterQuantiteDiete(alimentId,idDiete,quantite,str_repas) {
-  var url = "http://127.0.0.1:5000/ajouter_aliment_diete/" + alimentId + "/" + idDiete + "/" + quantite + "/" + str_repas;
-    
+// ------------------ END Update on the fly ------------------------------
+
+
+// ------------------ BEGIN Histogram chart ------------------------------
+function update_chart_intake() {
+
+    const fat_needed = Math.round(user_weight * FAT_PER_KG);
+    const carbs_needed = Math.round(user_weight * CARBS_PER_KG);
+    const protein_needed = Math.round(user_weight * PROTEIN_PER_KG);
+
+    const data_histo_intake = {
+        labels: ['Protéines', 'Glucides', 'Lipides'],
+        datasets: [{
+            label: 'Grammes',
+            data: [total_proteines, total_glucides, total_lipides],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+            ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // chart configuration : define the y_max value and the step_size
+    let y_max = Math.max(total_proteines, total_glucides, total_lipides);
+    y_max = Math.ceil(y_max / 10) * 10;
+    let step_size = Math.ceil((y_max / 10) / 10) * 10;
+    y_max = step_size * 11;
+
+    const config_histo_intake = {
+        type: 'bar',
+        data: data_histo_intake,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: y_max,
+                    ticks: {
+                        stepSize: step_size,
+                    },
+                },
+                x: {
+                    display: true,
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    formatter: function (value, context) {
+                        return value;
+                    },
+                    font: {
+                        weight: 'bold'
+                    },
+                    color: 'black'
+                },
+                annotation: {
+                    annotations: {
+                        proteinesLimit: {
+                            type: 'box',
+                            yMin: protein_needed,
+                            yMax: protein_needed,
+                            xMin: -1,
+                            xMax: 0.5,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                enabled: true,
+                                content: 'Limite Protéines',
+                                position: 'end',
+                                backgroundColor: 'red',
+                                color: 'white',
+                            }
+                        },
+                        glucidesLimit: {
+                            type: 'box',
+                            yMin: carbs_needed,
+                            yMax: carbs_needed,
+                            xMin: 0.5,
+                            xMax: 1.5,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                enabled: true,
+                                content: 'Limite Glucides',
+                                position: 'end',
+                                backgroundColor: 'red',
+                                color: 'white',
+                            }
+                        },
+                        lipidesLimit: {
+                            type: 'box',
+                            yMin: fat_needed,
+                            yMax: fat_needed,
+                            xMin: 1.5,
+                            xMax: 2.5,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                enabled: true,
+                                content: 'Limite Lipides',
+                                position: 'end',
+                                backgroundColor: 'red',
+                                color: 'white',
+                            }
+                        },
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    };
+
+    // Création du graphique Histogramme
+    const histo_chart_intake = new Chart(document.getElementById('chart_intake'), config_histo_intake);
+}
+
+// ------------------ END Histogram chart ------------------------------
+
+
+// -------------------- BEGIN import diet section ----------------------------------
+
+src = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+
+let filename = "";
+
+const repasLabels = {
+    1: 'Matin',
+    3: 'Midi',
+    5: 'Soir',
+    2: 'Collation Matin',
+    4: 'Collation Après-midi',
+    6: 'Collation Soir',
+};
+
+function submitForm(event) {
+    event.preventDefault();
+
+    // Create a new FormData object
+    const formData = new FormData();
+
+    // Get the CSV file
+    const fichierCSV = document.getElementById("fichier_csv").files[0];
+    formData.append("fichier_csv", fichierCSV);
+    filename = fichierCSV.name;
+
+    // Send a POST request to /importer_csv
+    fetch("/importer_csv", {
+        method: "POST",
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Process the response
+            if (data.success) {
+                // Get the list of unfound foods from the response
+                const liste_aliments_brute = data.liste_aliments;
+
+                // Get the container for the tables
+                const repasTablesContainer = document.getElementById('aliments-non-trouves');
+
+                repasTablesContainer.innerHTML = ''; // Clear the container
+
+                let currentTables = {};
+
+                // Loop through each food item
+                liste_aliments_brute.forEach(aliment => {
+                    const repasType = aliment.repas;
+
+                    // If the table for this meal doesn't exist yet, create it
+                    if (!currentTables[repasType]) {
+                        // Create the table
+                        const table = document.createElement('table');
+                        table.className = 'table table-bordered table-striped';
+
+                        // Add the table headers
+                        const thead = document.createElement('thead');
+                        const headerRow = document.createElement('tr');
+
+                        // Add the meal header
+                        const th = document.createElement('th');
+                        th.colSpan = 3;
+                        th.textContent = repasLabels[repasType];
+                        headerRow.appendChild(th);
+
+                        thead.appendChild(headerRow);
+                        table.appendChild(thead);
+
+                        // Add the tbody to the table
+                        const tbody = document.createElement('tbody');
+                        table.appendChild(tbody);
+
+                        repasTablesContainer.appendChild(table);
+
+                        // Store the tbody to add rows later
+                        currentTables[repasType] = tbody;
+                    }
+
+                    // Add the row to the corresponding table
+                    const tbody = currentTables[repasType];
+                    const row = document.createElement('tr');
+                    const cellAliment = document.createElement('td');
+                    cellAliment.style.width = '50%';
+                    const cellQuantite = document.createElement('td');
+                    cellQuantite.style.width = '25%';
+                    const cellOptions = document.createElement('td');
+                    cellOptions.style.width = '25%';
+
+                    cellAliment.textContent = aliment.aliment;
+                    cellQuantite.textContent = aliment.quantite;
+
+                    // Create a select element
+                    const select = document.createElement('select');
+                    select.className = 'form-control';
+                    select.id = 'select' + aliment.id;
+                    select.name = 'select' + aliment.id;
+                    select.required = true;
+
+                    // Add the options
+                    aliment.suggestions.forEach(suggestion => {
+                        const option = document.createElement('option');
+                        option.value = suggestion[0];
+                        option.textContent = suggestion[0];
+                        select.appendChild(option);
+                    });
+
+                    // Add the options
+                    cellOptions.appendChild(select);
+
+                    row.appendChild(cellAliment);
+                    row.appendChild(cellQuantite);
+                    row.appendChild(cellOptions);
+                    tbody.appendChild(row);
+                });
+
+                // Open the modal window
+                const modalImport = new bootstrap.Modal(document.getElementById('modalImport'));
+                modalImport.show();
+            } else {
+                alert('Erreur lors de l\'importation du fichier CSV');
+                console.log('Error importing the diet while converting the CSV file');
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de l\'importation du fichier CSV' + error);
+            window.location.reload();
+        });
+}
+
+function load_import_diet() {
+    const dietTitle = filename.split('.').slice(0, -1).join('.'); // Remove the file extension
+    const aliments = [];
+    document.querySelectorAll('#aliments-non-trouves tr').forEach(row => {
+        // si ligne 1 (titre du repas) on passe
+        if (row.cells.length === 1) {
+            return;
+        }
+
+        // Get the quantity
+        const quantite = row.cells[1].textContent;
+        // Get the selected suggestion
+        const select = row.cells[2].querySelector('select');
+        const suggestion = select.options[select.selectedIndex].value;
+        // Get the meal number
+        const repas = row.closest('table').querySelector('th').textContent;
+        const repas_number = Object.keys(repasLabels).find(key => repasLabels[key] === repas);
+
+        aliments.push({
+            quantite,
+            suggestion,
+            repas_number,
+        });
+    });
+
+    fetch('/store_diet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({diet_title: dietTitle, aliments})
+    })
+        .then(response => response.json())
+        .then(() => {
+            window.location.reload();
+        })
+}
+
+// -------------------- END import diet section ----------------------------------
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+
+function ajouterQuantite(alimentId, idDiete) {
+    var str_repas = "";
+
+    var quantiteInput = document.getElementById("quantite" + alimentId);
+    var quantite = quantiteInput.value;
+
+    if (quantite == "") {
+        alert("Veuillez entrer une quantité.");
+        return;
+    }
+
+    const matin = document.getElementById('matinCheckbox' + alimentId);
+    const col_matin = document.getElementById('col_matinCheckbox' + alimentId);
+    const midi = document.getElementById('midiCheckbox' + alimentId);
+    const col_aprem = document.getElementById('col_apremCheckbox' + alimentId);
+    const soir = document.getElementById('soirCheckbox' + alimentId);
+    const col_soir = document.getElementById('col_soirCheckbox' + alimentId);
+
+    if (matin.checked) {
+        str_repas += matin.value;
+    }
+    if (col_matin.checked) {
+        str_repas += col_matin.value;
+    }
+    if (midi.checked) {
+        str_repas += midi.value;
+    }
+    if (col_aprem.checked) {
+        str_repas += col_aprem.value;
+    }
+    if (soir.checked) {
+        str_repas += soir.value;
+    }
+    if (col_soir.checked) {
+        str_repas += col_soir.value;
+    }
+
+    if (!matin.checked && !col_matin.checked && !midi.checked && !col_aprem.checked && !soir.checked && !col_soir.checked) {
+        alert("Veuillez sélectionner au moins un repas.");
+        return;
+    }
+
+    ajouterQuantiteDiete(alimentId, idDiete, quantite, str_repas);
+}
+
+function ajouterQuantiteDiete(alimentId, idDiete, quantite, str_repas) {
+    var url = "http://127.0.0.1:5000/ajouter_aliment_diete/" + alimentId + "/" + idDiete + "/" + quantite + "/" + str_repas;
+
     $.ajax({
-      url: url,
-      type: "GET",
-      success: function(response) {
-        window.location.reload();
-      },
-      error: function(error) {
-        console.log(error);
-      }
+        url: url,
+        type: "GET",
+        success: function (response) {
+            window.location.reload();
+        },
+        error: function (error) {
+            console.log(error);
+        }
     });
 }
 
 function checkFileSelected() {
-  var fileInput = document.getElementById('fichier_csv');
-  var button = document.getElementById('bouton_importer');
-  if (fileInput.files.length > 0) {
-      button.disabled = false;
-  }
+    var fileInput = document.getElementById('fichier_csv');
+    var button = document.getElementById('bouton_importer');
+    if (fileInput.files.length > 0) {
+        button.disabled = false;
+    }
 }
 
 function changeTitle(id) {
-  var titleInput = document.getElementById("titleInput");
-  var title = titleInput.value;
-  var url = "http://127.0.0.1:5000/change_title/" + id + "/" + title;
-  
-  $.ajax({
-    url: url,
-    type: "GET",
-    success: function(response) {
-      window.location.reload();
-    },
-    error: function(error) {
-      console.log(error);
-    }
-  });
+    var titleInput = document.getElementById("titleInput");
+    var title = titleInput.value;
+    var url = "http://127.0.0.1:5000/change_title/" + id + "/" + title;
+
+    $.ajax({
+        url: url,
+        type: "GET",
+        success: function (response) {
+            window.location.reload();
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 }
 
 var delayTimer; // Timer pour retarder l'envoi de la requête AJAX
 
 var currentPage = 1;
-var pageSize = 5; // Nombre d'éléments par page
+var pageSize = 3; // Nombre d'éléments par page
 
 function updateData() {
-  var filterValue = $('#filterInput').val();
-  var selected_category = "";
+    var filterValue = $('#filterInput').val();
+    var selected_category = "";
 
-  const categoryFilterSelect = document.getElementById('filterSelect');
-  categoryFilterSelect.addEventListener('change', function() {
-    fetchData();
-  });
-  
-  // Function to fetch the data using AJAX
-  function fetchData() {
-    
-    filterValue = document.getElementById('filterInput').value;
-    selected_category = categoryFilterSelect.value;
-
-    $.ajax({
-      url: '/get_filtered_data',
-      type: 'POST',
-      data: {
-        filter: filterValue,
-        selected_category: selected_category,
-        page: currentPage,
-        page_size: pageSize
-      },
-      success: function(response) {
-        var dataContainer = $('#dataContainer');
-        dataContainer.empty();
-
-        if(response.data.length === 0) {
-          dataContainer.append('<tr><td colspan="4" class="text-center">Aucun aliment trouvé.</td></tr>');
-          updatePagination(1);
-          return;
-        }
-
-        response.data.forEach(function(item) {
-          dataContainer.append('<tr class="element_aliment"><td style="width: 40%;">' 
-          + item.titre + '</td><td style="width: 30%;">'
-          + item.kcal + ' kcal</td><td style="width: 30%;">'
-          + item.proteines + ' g/p</td><td><button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Ajouter" data-bs-toggle="modal" data-bs-target="#modal'
-          + item.id + '"><i class="fa fa-plus"></i></button>'
-          + fenetre_modale(item) + '</td></tr>');
-        });
-
-        // Mise à jour de la pagination
-        updatePagination(response.total_pages);
-      },
-      error: function() {
-        alert('Erreur lors du chargement des données filtrées.');
-      }
+    const categoryFilterSelect = document.getElementById('filterSelect');
+    categoryFilterSelect.addEventListener('change', function () {
+        fetchData();
     });
-  }
 
-  // Initial fetch of data on page load
-  fetchData();
+    // Function to fetch the data using AJAX
+    function fetchData() {
+
+        filterValue = document.getElementById('filterInput').value;
+        selected_category = categoryFilterSelect.value;
+
+        $.ajax({
+            url: '/get_filtered_data',
+            type: 'POST',
+            data: {
+                filter: filterValue,
+                selected_category: selected_category,
+                page: currentPage,
+                page_size: pageSize
+            },
+            success: function (response) {
+                var dataContainer = $('#dataContainer');
+                dataContainer.empty();
+
+                if (response.data.length === 0) {
+                    dataContainer.append('<tr><td colspan="4" class="text-center">Aucun aliment trouvé.</td></tr>');
+                    updatePagination(1);
+                    return;
+                }
+
+                response.data.forEach(function (item) {
+                    dataContainer.append('<tr class="element_aliment"><td style="width: 70%;">'
+                        + item.titre + '</td><td style="width: 30%;">'
+                        + item.kcal + ' kcal</td><td><button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Ajouter" data-bs-toggle="modal" data-bs-target="#modal'
+                        + item.id + '"><i class="fa fa-plus"></i></button>'
+                        + fenetre_modale(item) + '</td></tr>');
+                });
+
+                // Mise à jour de la pagination
+                updatePagination(response.total_pages);
+            },
+            error: function () {
+                alert('Erreur lors du chargement des données filtrées.');
+            }
+        });
+    }
+
+    // Initial fetch of data on page load
+    fetchData();
 }
 
+$(document).ready(function () {
+    $('#filterInput').on('keyup', function () {
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(updateData, 500);
+    });
 
-function updatePagination(totalPages) {
-  var pagination = $('#pagination');
-  pagination.empty();
-
-  // Créer le lien pour la page précédente
-  pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + (currentPage - 1) + ')" id="prevPageLink">&laquo;</a></li>');
-
-  // Créer les liens pour chaque page
-  for (var i = 1; i <= totalPages; i++) {
-      pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + i + ')">' + i + '</a></li>');
-  }
-
-  // Créer le lien pour la page suivante
-  pagination.append('<li class="page-item"><a class="page-link" href="#" onclick="goToPage(' + (currentPage + 1) + ')" id="nextPageLink">&raquo;</a></li>');
-
-  // Désactiver le lien de la page précédente si on est à la première page
-  if (currentPage === 1) {
-      $('#prevPageLink').addClass('disabled');
-  } else {
-      $('#prevPageLink').removeClass('disabled');
-  }
-
-  // Désactiver le lien de la page suivante si on est à la dernière page
-  if (currentPage === totalPages) {
-      $('#nextPageLink').addClass('disabled');
-  } else {
-      $('#nextPageLink').removeClass('disabled');
-  }
-}
-
-function goToPage(pageNumber) {
-  currentPage = pageNumber;
-  updateData();
-}
-
-$(document).ready(function() {
-  $('#filterInput').on('keyup', function() {
-      clearTimeout(delayTimer);
-      delayTimer = setTimeout(updateData, 500);
-  });
-
-  // Charger les données initiales (page 1)
-  updateData();
+    // Charger les données initiales (page 1)
+    updateData();
+    // Charger le graphique
+    update_chart_intake();
 });
 
-function fenetre_modale(item){
-  return `<div class="modal fade" id="modal${item.id}" tabindex="-1" aria-labelledby="modal${item.id}Label" aria-hidden="true">
+function fenetre_modale(item) {
+    return `<div class="modal fade" id="modal${item.id}" tabindex="-1" aria-labelledby="modal${item.id}Label" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -207,7 +507,7 @@ function fenetre_modale(item){
                     <input type="number" id="quantite${item.id}" class="form-control" min="1" required placeholder="Quantité">
                     
                     <div class="input-group-prepend">
-                      <div class="input-group-text" id="btnGroupAddon2">`+ unite_to_string(item.unite) + item.titre +`</div>
+                      <div class="input-group-text" id="btnGroupAddon2">` + unite_to_string(item.unite) + item.titre + `</div>
                     </div>
 
                   </div>
@@ -260,6 +560,7 @@ function fenetre_modale(item){
             </div>
           </div>`;
 }
+
 /*
 function fenetre_modale(item){
   return `<div class="modal fade" id="modal${item.id}" tabindex="-1" aria-labelledby="modal${item.id}Label" aria-hidden="true">
@@ -307,14 +608,12 @@ function fenetre_modale(item){
           </div>`;
 }
 */
-function unite_to_string(unite){
-  if(unite == 0){
-    return "g ";
-  }
-  else if(unite == 1){
-    return "";
-  }
-  else{
-    return "mL ";
-  }
+function unite_to_string(unite) {
+    if (unite == 0) {
+        return "g ";
+    } else if (unite == 1) {
+        return "";
+    } else {
+        return "mL ";
+    }
 }

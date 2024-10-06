@@ -38,9 +38,9 @@
   const pourcentage_lipides = {{ pourcentage_lipides }};
   const pourcentage_glucides = {{ pourcentage_glucides }};
 
-    const objectif_proteines = {{ (utilisateur.poids * 1.8)|round|int }} + " - " + {{ (utilisateur.poids * 2.2)|round|int }}
-    const objectif_lipides = {{ (utilisateur.poids * 0.8)|round|int }} + " - " + {{ (utilisateur.poids * 1)|round|int }}
-    const objectif_glucides = {{ (calories * 0.4 / 4)|round|int }} + " - " + {{ (calories * 0.6 / 4)|round|int }}
+  const objectif_proteines = {{ (utilisateur.poids * 1.8)|round|int }} + " - " + {{ (utilisateur.poids * 2.2)|round|int }}
+  const objectif_lipides = {{ (utilisateur.poids * 0.8)|round|int }} + " - " + {{ (utilisateur.poids * 1)|round|int }}
+  const objectif_glucides = {{ (calories * 0.4 / 4)|round|int }} + " - " + {{ (calories * 0.6 / 4)|round|int }}
 
   {% endif %}
 
@@ -115,16 +115,16 @@
                   <h6 class="text-muted card-subtitle mb-2"></h6>
 
                   <div class="card_container">
-                      <input type="range" class="form-range" min="0" max="4" step="1" id="customRange">
+                      <input type="range" class="form-range" min="0" max="4" step="1" value={{ utilisateur.activite }} id="customRange">
 
                       <div class="align_items_horizontal gap_10 justify_content_center">
-                        <p id="activityLabel" class="text-center font-weight-bold">Actif · 1,55</p>
-                        <i id="info_activity" class="fa fa-info-circle vertical_center" data-toggle="tooltip" title="Vous faites régulièrement des exercices physiques (3 à 5 fois par semaine)"></i>
+                        <p id="activityLabel" class="text-center font-weight-bold"></p>
+                        <i id="info_activity" class="fa fa-info-circle vertical_center" data-toggle="tooltip"></i>
                       </div>
                       
-                      <input type="range" class="form-range" min="0" max="2" step="1" id="customRangeType">
+                      <input type="range" class="form-range" min="0" max="2" step="1" value={{ utilisateur.objectif }} id="customRangeType">
                       
-                      <p class="text-center font-weight-bold" id="activityLabelType">Maintien · 1</p>
+                      <p class="text-center font-weight-bold" id="activityLabelType"></p>
 
                       <div>
                           {% if utilisateur.sexe == 'homme' %}

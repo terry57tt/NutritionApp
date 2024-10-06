@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from models.Utilisateur import Utilisateur
 from flask_mail import Mail
 from flask_session import Session
+import secrets
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'static/upload/'
@@ -14,12 +15,12 @@ size_limit_mo = 10
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 flask_serv_intern = Flask(__name__,
-                              static_folder="static",
-                              template_folder='templates')
+                          static_folder="static",
+                          template_folder='templates')
 
-flask_serv_intern.config['SQLALCHEMY_DATABASE_URI'] =\
+flask_serv_intern.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'database.db')
-flask_serv_intern.secret_key = 'secret_key'
+flask_serv_intern.secret_key = secrets.token_hex(16)
 
 flask_serv_intern.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 flask_serv_intern.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -45,17 +46,18 @@ flask_serv_intern.config['MAIL_USERNAME'] = 'terrynutritionapp@gmail.com'
 flask_serv_intern.config['MAIL_PASSWORD'] = 'qqfpvggfqadsuxkx'
 mail = Mail(flask_serv_intern)
 
-# Setup Cookies Configurations
-flask_serv_intern.config['COOKIES_SECRET_KEY'] = 'secret_key'
-flask_serv_intern.config['COOKIES_EXPIRE_TIME'] = 60 * 60 * 24 * 7
-Session(flask_serv_intern)
 
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
 
+
 with flask_serv_intern.app_context():
-        db.create_all()
+    db.create_all()
+
+# use config.py to store all common configurations of the app
+from config import Config
+flask_serv_intern.config.from_object(Config)
 
 if __name__ == "__main__":
     flask_serv_intern.run(debug=True)

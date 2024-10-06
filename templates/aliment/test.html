@@ -43,7 +43,7 @@
                         <td>{{ user.poids }}</td>
                         <td>{{ user.age }}</td>
                         <td>{{ user.sexe }}</td>
-                        <td><a href="{{ url_for('controllers.use', id=user.id) }}" class="btn btn-primary">Uiliser</a></td>
+                        <td><a href="{{ url_for('controllers.use', id=user.id) }}" class="btn btn-primary">Utiliser</a></td>
                         <td><a href="{{ url_for('controllers.delete_user', id=user.id) }}" class="btn btn-danger">Supprimer</a></td>
                     </tr>
                 {% endfor %}

@@ -4,22 +4,25 @@
 
         {% for repas in diete.sets_of_portions() %}
             <table class="table table-striped table-bordered full-width-table">
-                <tr>
-                    <th style="padding-left: 10px;">
-                        {{ meal_names[loop.index - 1] }}
-                    </th>
-                    <td class="text-right">
-                        <button id="toggleRow{{ loop.index - 1 }}" class="btn btn-default">
-                            <i class="fa fa-angle-down"></i>
-                        </button>
-                    </td>
-                    <td class="secondary" style="width: {{ percent[2] }}%">Protéines</th>
-                    <td class="secondary" style="width: {{ percent[3] }}%">Glucides</th>
-                    <td class="secondary" style="width: {{ percent[4] }}%">Lipides</th>
-                    <td style="width: {{ percent[5] }}%">Kcal</th>
-                </tr>
-
+                
                 {% for portion in repas %}
+
+                    {% if loop.first %}
+                    <tr>
+                        <th style="padding-left: 10px;">
+                            {{ meal_names[portion.label_portion - 1] }}
+                        </th>
+                        <td class="text-right">
+                            <button id="toggleRow{{ portion.label_portion }}" class="btn btn-default">
+                                <i class="fa fa-angle-down"></i>
+                            </button>
+                        </td>
+                        <td class="secondary" style="width: {{ percent[2] }}%">Protéines</td>
+                        <td class="secondary" style="width: {{ percent[3] }}%">Glucides</td>
+                        <td class="secondary" style="width: {{ percent[4] }}%">Lipides</td>
+                        <td style="width: {{ percent[5] }}%">Kcal</td>
+                    </tr>    
+                    {% endif %}
                 
                     <tr class="text-center">
                         <td style="width: {{ percent[0] }}%">{{ portion.nombre }} {{ unites_names[portion.aliment_obj.unite] }}</td>
@@ -32,28 +35,35 @@
                         <td style="width: {{ percent[5] }}%">{{ portion.kcal_portion() }}</td>
                     </tr>
 
+                    {% if loop.last %}
+                        <tr class="text-center totalRow" id="totalRow{{ portion.label_portion }}">
+                            <th colspan="2" style="padding-left: 10px;">Total</th>
+                            <td style="width: {{ percent[2] }}%">{{ diete.total_proteines_portion(portion.label_portion)|round|int }} g</td>
+                            <td style="width: {{ percent[3] }}%">{{ diete.total_glucides_portion(portion.label_portion)|round|int }} g</td>
+                            <td style="width: {{ percent[4] }}%">{{ diete.total_lipides_portion(portion.label_portion)|round|int }} g</td>
+                            <td style="width: {{ percent[5] }}%">{{ diete.total_kcal_meal(portion.label_portion)|round|int }} kcal</td>
+                        </tr>
+        
+                        <script>
+                            document.getElementById("toggleRow{{ portion.label_portion }}").addEventListener("click", function() {
+                                var totalRow = document.getElementById("totalRow{{ portion.label_portion }}");
+                                if (totalRow.style.display === "none" || totalRow.style.display === "") {
+                                totalRow.style.display = "table-row";
+                                this.innerHTML = '<i class="fa fa-angle-up"></i>'
+                                } else {
+                                totalRow.style.display = "none";
+                                this.innerHTML = '<i class="fa fa-angle-down"></i>'
+                                }
+                            });
+                        </script>
+                    {% endif %}
+
+
                 {% endfor %}
+                
 
-                <tr class="text-center totalRow" id="totalRow{{ loop.index - 1 }}">
-                    <th colspan="2" style="padding-left: 10px;">Total</th>
-                    <td style="width: {{ percent[2] }}%">{{ diete.total_proteines_portion(loop.index)|round|int }} g</td>
-                    <td style="width: {{ percent[3] }}%">{{ diete.total_glucides_portion(loop.index)|round|int }} g</td>
-                    <td style="width: {{ percent[4] }}%">{{ diete.total_lipides_portion(loop.index)|round|int }} g</td>
-                    <td style="width: {{ percent[5] }}%">{{ diete.total_kcal_portion(loop.index)|round|int }} kcal</td>
-                </tr>
 
-                <script>
-                    document.getElementById("toggleRow{{ loop.index - 1 }}").addEventListener("click", function() {
-                        var totalRow = document.getElementById("totalRow{{ loop.index - 1 }}");
-                        if (totalRow.style.display === "none" || totalRow.style.display === "") {
-                        totalRow.style.display = "table-row";
-                        this.innerHTML = '<i class="fa fa-angle-up"></i>'
-                        } else {
-                        totalRow.style.display = "none";
-                        this.innerHTML = '<i class="fa fa-angle-down"></i>'
-                        }
-                    });
-                </script>
+                
 
             </table>
         {% endfor %}

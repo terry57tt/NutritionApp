@@ -5,11 +5,13 @@ from flask_login import login_required, current_user
 
 from controllers import app
 
+
 @app.route('/reglages')
 @login_required
 def reglages():
     utilisateur_courrant = current_user
     return render_template('reglages/reglages.html', utilisateur=utilisateur_courrant)
+
 
 @app.route('/modifier_utilisateur/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -22,6 +24,8 @@ def modifier_utilisateur(id):
         utilisateur_courrant.taille = request.form['taille']
         utilisateur_courrant.poids = request.form['poids']
         utilisateur_courrant.sexe = request.form['sexe']
+        utilisateur_courrant.objectif = request.form['objectif']
+        utilisateur_courrant.activite = request.form['activite']
 
         db.session.commit()
 

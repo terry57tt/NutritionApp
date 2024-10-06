@@ -1,3 +1,14 @@
+document.addEventListener("DOMContentLoaded", function() {
+  const activityLevel = parseInt(rangeInput.value);
+    changeLabelActivity(activityLevel);
+    changeTooltip(activityLevel);
+
+    const dietType = parseInt(rangeInputType.value);
+    changeLabelObjectif(dietType);
+
+    changeCalories();
+});
+
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
@@ -34,7 +45,12 @@ var info_activity = document.getElementById('info_activity')
 
 rangeInput.addEventListener("input", function() {
     const activityLevel = parseInt(rangeInput.value);
+    changeLabelActivity(activityLevel);
+    changeTooltip(activityLevel);
+    changeCalories();
+});
 
+function changeLabelActivity(activityLevel) {
     switch (activityLevel) {
         case 0:
             activityLabel.textContent = "Sédentaire · 1,2";
@@ -59,10 +75,7 @@ rangeInput.addEventListener("input", function() {
         default:
             activityLabel.textContent = "";
     }
-
-    changeTooltip(activityLevel);
-    changeCalories();
-});
+  }
 
 function changeTooltip(activityLevel) {
   switch (activityLevel) {
@@ -106,26 +119,29 @@ function changeTooltip(activityLevel) {
 
 rangeInputType.addEventListener("input", function() {
     const dietType = parseInt(rangeInputType.value);
-
-    switch (dietType) {
-        case 0:
-          activityLabelType.textContent = "Sèche · 0,8";
-          selected_diet_type = 0.8;
-            break;
-        case 1:
-          activityLabelType.textContent = "Maintien · 1";
-          selected_diet_type = 1;
-            break;
-        case 2:
-          activityLabelType.textContent = "Prise de masse · 1,2";
-          selected_diet_type = 1.2;
-            break;
-        default:
-          activityLabelType.textContent = "";
-    }
-
+    changeLabelObjectif(dietType);
     changeCalories();
 });
+
+function changeLabelObjectif(dietType) {
+    switch (dietType) {
+      case 0:
+        activityLabelType.textContent = "Sèche · 0,8";
+        selected_diet_type = 0.8;
+          break;
+      case 1:
+        activityLabelType.textContent = "Maintien · 1";
+        selected_diet_type = 1;
+          break;
+      case 2:
+        activityLabelType.textContent = "Prise de masse · 1,2";
+        selected_diet_type = 1.2;
+          break;
+      default:
+        activityLabelType.textContent = "";
+  }
+}
+
 
 function changeCalories() {
     caloriesLabel_HB.textContent = Math.round(caloriesMB_HB * selected_activity * selected_diet_type);
